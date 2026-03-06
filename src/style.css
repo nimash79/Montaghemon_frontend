@@ -1,0 +1,313 @@
+@font-face {
+  font-family: Shabnam;
+  src:
+    url("/font/Shabnam/Shabnam-FD.ttf") format("truetype"),
+    url("/font/Shabnam/Shabnam-FD.woff") format("woff"),
+    url("/font/Shabnam/Shabnam-FD.woff2") format("woff2"),
+    url("/font/Shabnam/Shabnam-FD.eot") format("embedded-opentype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: Shabnam;
+  src:
+    url("/font/Shabnam/Shabnam-Medium-FD.ttf") format("truetype"),
+    url("/font/Shabnam/Shabnam-Medium-FD.woff") format("woff"),
+    url("/font/Shabnam/Shabnam-Medium-FD.woff2") format("woff2"),
+    url("/font/Shabnam/Shabnam-Medium-FD.eot") format("embedded-opentype");
+  font-weight: 500;
+}
+@font-face {
+  font-family: Shabnam;
+  src:
+    url("/font/Shabnam/Shabnam-Bold-FD.ttf") format("truetype"),
+    url("/font/Shabnam/Shabnam-Bold-FD.woff") format("woff"),
+    url("/font/Shabnam/Shabnam-Bold-FD.woff2") format("woff2"),
+    url("/font/Shabnam/Shabnam-Bold-FD.eot") format("embedded-opentype");
+  font-weight: 700;
+}
+@font-face {
+  font-family: Shabnam;
+  src:
+    url("/font/Shabnam/Shabnam-Light-FD.ttf") format("truetype"),
+    url("/font/Shabnam/Shabnam-Light-FD.woff") format("woff"),
+    url("/font/Shabnam/Shabnam-Light-FD.woff2") format("woff2"),
+    url("/font/Shabnam/Shabnam-Light-FD.eot") format("embedded-opentype");
+  font-weight: 300;
+}
+@font-face {
+  font-family: Shabnam;
+  src:
+    url("/font/Shabnam/Shabnam-Thin-FD.ttf") format("truetype"),
+    url("/font/Shabnam/Shabnam-Thin-FD.woff") format("woff"),
+    url("/font/Shabnam/Shabnam-Thin-FD.woff2") format("woff2"),
+    url("/font/Shabnam/Shabnam-Thin-FD.eot") format("embedded-opentype");
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: "Changa One";
+  src: url("/font/Changa_One/ChangaOne-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Backgrounds */
+  --bg0: #0f172a; /* app background */
+  --bg1: #111c33; /* cards/surfaces */
+
+  /* Brand (Red) */
+  --primary: #ff2d2d; /* اصلی */
+  --shade1: #e52323;
+  --shade2: #c61b1b;
+  --shade3: #a91414;
+  --shade4: #7f0c0c;
+  --shade5: #4d0606;
+
+  /* Warnings / Success / Error */
+  --warning: #c58b1f;
+  --warning_light1: #ffbf3c;
+  --warning_light2: #2a1f0a;
+
+  --success: #00b37e;
+  --success2: #22c55e;
+  --success_light2: #071a12;
+
+  --error: #ff3b3b;
+  --error_light2: #230b0b;
+
+  /* Neutrals (for text, borders, disabled, etc.) */
+  --neutral_black: #06060a;
+
+  --neutral_20: #e9e9ee; /* متن اصلی روی تیره (روشن) */
+  --neutral_40: #c7c7d1;
+  --neutral_60: #9a9aa6;
+  --neutral_86: #6e6e7a;
+
+  --neutral_df: #2a2a33; /* border های تیره */
+  --neutral_ed: #1c1c24;
+  --neutral_f9: #14141c;
+
+  --neutral_cb: #3a3a45;
+  --neutral_ad: #4b4b58;
+
+  /* Sections / Containers */
+  --backSections: #0f0f16;
+
+  /* Compatibility tokens (که قبلاً برای تم روشن داشتی) */
+  --backMainP: #0b0b0f;
+  --backLight: #13131b;
+  --blackLight: #13131b;
+  --blackMainP: #0b0b0f;
+
+  /* Tints (برای state ها: hover/selected/outline) */
+  --tint0: #160c0c; /* خیلی کم قرمز */
+  --tint1: #1f0f0f;
+  --tint2: #2a1212;
+  --tint3: #3b1616;
+  --tint4: #521b1b;
+  --tint5: #7a2222;
+
+  /* Accent badges (اختیاری، برای برچسب‌ها/کارت‌ها) */
+  --gold: #241a08;
+  --silver: #14141c;
+  --bronze: #220f0f;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.lang-fa body,
+.lang-fa input,
+.lang-fa button {
+  font-family: "Shabnam", "Segoe UI";
+  direction: rtl;
+}
+.lang-en body,
+.lang-en input,
+.lang-en button {
+  font-family: "Changa One", "Segoe UI";
+  direction: ltr;
+}
+
+input[type="submit"],
+button {
+  cursor: pointer;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  --moz-appearance: textfield;
+}
+ul li {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+}
+p {
+  margin: 0;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-layout {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100vh;
+  background-color: var(--bg0);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  color: var(--neutral_40);
+  padding: 0 25px;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    max-width: 100%;
+    box-shadow: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .btn-setting-devices {
+    max-width: 370px;
+    margin: 0 auto;
+  }
+  .modal-backdrop {
+    width: 420px;
+    margin: 0 auto;
+  }
+  .custom-modal {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .menu {
+    width: 420px;
+    margin: 0 auto;
+  }
+  .status-bar {
+    width: 420px;
+    margin: 0 auto;
+  }
+}
+
+/* Main Layout */
+.main-layout .header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+.main-layout .header .icon {
+  cursor: pointer;
+}
+.main-layout .dual-buttons {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--tint2);
+  border-radius: 8px;
+  padding: 4px;
+}
+.main-layout .dual-buttons > div:nth-child(1) {
+  margin-inline-end: 10px;
+}
+.main-layout .dual-buttons .dual-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--tint5);
+}
+.main-layout .dual-buttons .dual-button.active {
+  background-color: var(--shade1);
+}
+.main-layout .dual-buttons .dual-button.active p {
+  color: var(--neutral_ed);
+}
+.main-layout .dual-buttons .dual-button p {
+  margin-inline-start: 4px;
+  font-size: 12px;
+}
+.main-layout .header-title {
+  font-size: 20px;
+  font-weight: 700;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--neutral_40);
+  color: var(--neutral_40);
+}
+/* End Main Layout */
+
+/* Home Page */
+.home-page {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translate(0, -50%);
+  padding: 0 25px;
+}
+.home-page .player .first {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.home-page .player .first img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+.home-page .player .first span {
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--neutral_20);
+}
+.home-page .player .second {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 24px 0;
+}
+.home-page .player .third {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* End Home Page */
+
+/* Status Bar */
+.status-bar {
+  padding: 12px;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 12px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  position: fixed;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+/* End Status Bar */
