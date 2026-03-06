@@ -1,5 +1,5 @@
 import Hls from "hls.js";
-import { PLAY_STATUS } from './../lib/constants';
+import { PLAY_STATUS } from "./../lib/constants";
 
 export class SyncHlsPlayer {
   constructor({ clock }) {
@@ -9,6 +9,8 @@ export class SyncHlsPlayer {
     this.schedule = [];
     this.playStatus = PLAY_STATUS.NORMAL;
     this.thumbnail = "";
+    this.forced = null;
+    this.forceLoad = false;
 
     // Hybrid thresholds
     this.SOFT_MS = 70;
@@ -19,6 +21,10 @@ export class SyncHlsPlayer {
     this.lastResyncAt = 0;
 
     this.lastUrl = null;
+  }
+
+  setForced(forced) {
+    this.forced = forced;
   }
 
   setSchedule(schedule) {
@@ -139,10 +145,90 @@ export class SyncHlsPlayer {
     this._resyncMark();
   }
 
+  async forceSwitchTo({ hlsUrl }) {
+    if (!this.audio) return;
+
+    // 1) stop فعلی
+    try {
+      this.audio.pause();
+    } catch {}
+    // خیلی مهم: event loop فرصت بده
+    await new Promise((r) => setTimeout(r, 0));
+
+    // 2) اگر hls.js دارید کامل نابودش کن
+    if (this.hls) {
+      try {
+        this.hls.destroy();
+      } catch {}
+      this.hls = null;
+    }
+
+    // 3) قطع قطعی منبع قبلی
+    this.audio.removeAttribute("src");
+    this.audio.load();
+
+    // 4) لود منبع جدید
+    this.lastUrl = hlsUrl;
+    this._load(hlsUrl);
+
+    // 5) صبر تا متادیتا/مانیفست آماده شود
+    await this.waitOnce(this.audio, "loadedmetadata", 3000);
+
+    // 6) حالا seek کن
+    this.audio.currentTime = 0;
+
+    // 7) play
+    await this.audio.play().catch(() => {});
+  }
+
+  waitOnce(el, event, timeoutMs = 2000) {
+    return new Promise((resolve, reject) => {
+      const t = setTimeout(() => {
+        cleanup();
+        reject(new Error(`timeout waiting for ${event}`));
+      }, timeoutMs);
+
+      function onEv() {
+        cleanup();
+        resolve();
+      }
+      function cleanup() {
+        clearTimeout(t);
+        el.removeEventListener(event, onEv);
+      }
+
+      el.addEventListener(event, onEv, { once: true });
+    });
+  }
+
   tick() {
     if (!this.audio || !this.schedule.length) return { ok: false };
 
     const nowS = this.clock.nowServerMs();
+    if (this.forced && nowS >= this.forced.atServerMs) {
+      const forced = this.forced;
+
+      this.thumbnail = forced.thumbnail;
+
+      if (!this.forceLoad) {
+        console.log("FORCE SWITCH:", forced);
+        this.forceSwitchTo({
+          hlsUrl: forced.hlsUrl,
+        }).catch((e) => console.error("forceSwitchTo failed:", e));
+        this.forceLoad = true;
+      }
+      if (nowS >= forced.atServerMs + forced.durationMs) {
+        this.forced = null;
+        this.forceLoad = false;
+      }
+      return {
+        ok: true,
+        trackId: forced.trackId,
+        trackName: forced.name,
+        driftMs: 0,
+        action: "forced",
+      };
+    }
     const seg = this.findSegment(nowS);
     if (!seg) return { ok: false };
 
@@ -194,7 +280,13 @@ export class SyncHlsPlayer {
 
       if (Math.abs(driftMs) > this.HARD_MS) {
         this._hardSeek(targetSec);
-        return { ok: true, trackId: seg.trackId, trackName: seg.trackName, driftMs, action: "hard_seek" };
+        return {
+          ok: true,
+          trackId: seg.trackId,
+          trackName: seg.trackName,
+          driftMs,
+          action: "hard_seek",
+        };
       }
     }
 

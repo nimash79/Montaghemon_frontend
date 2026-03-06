@@ -54,13 +54,15 @@ const HomePage = () => {
 
       if (msg.type === "hello" || msg.type === "schedule") {
         player.setSchedule(msg.schedule || []);
+        if (msg.forced) player.setForced(msg.forced);
       }
+      if (msg.type === "force") player.setForced(msg.forced);
     };
 
     return () => {
       try {
         ws.close();
-      } catch { }
+      } catch {}
       clockRef.current?.stop();
       player.detach();
     };
@@ -135,9 +137,9 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div>Track: {info.trackId}</div>
+        {/* <div>Track: {info.trackId}</div>
       <div>Drift (ms): {Number(info.driftMs).toFixed(1)}</div>
-      <div>Action: {info.action}</div>
+      <div>Action: {info.action}</div> */}
 
         <audio
           ref={audioRef}
