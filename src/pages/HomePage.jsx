@@ -7,7 +7,8 @@ import PlayIcon from "../components/icons/MediaIcons/PlayIcon";
 import PauseIcon from "../components/icons/MediaIcons/PauseIcon";
 import { PLAY_STATUS } from "../lib/constants";
 
-const WS_URL = import.meta.env.VITE_SERVER_URL || "";
+const WS_HOST = window.location.host.includes("localhost") ? import.meta.env.VITE_WS_HOST : window.location.host;
+const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${WS_HOST}/ws`;
 import ProgressLine from "../components/media/ProgressLine";
 
 const HomePage = () => {
@@ -32,6 +33,7 @@ const HomePage = () => {
   );
 
   useEffect(() => {
+    console.log(WS_URL);
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
