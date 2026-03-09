@@ -66,7 +66,7 @@ const HomePage = () => {
       clockRef.current?.stop();
       player.detach();
     };
-  }, [player]);
+  }, []);
 
   useEffect(() => {
     player.attach(audioRef.current);

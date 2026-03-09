@@ -263,33 +263,6 @@ export class SyncHlsPlayer {
 
     const curSec = this.audio.currentTime || 0;
     const driftMs = (curSec - targetSec) * 1000;
-
-    // Hybrid: اول seek، اگر خیلی بد بود reload
-    if (this._cooldownOk()) {
-      if (Math.abs(driftMs) > this.RELOAD_MS) {
-        this._reloadAndSeek(url, targetSec);
-        return {
-          ok: true,
-          trackId: seg.trackId,
-          trackName: seg.trackName,
-          driftMs,
-          action: "reload+seek",
-          play_status: this.playStatus,
-        };
-      }
-
-      if (Math.abs(driftMs) > this.HARD_MS) {
-        this._hardSeek(targetSec);
-        return {
-          ok: true,
-          trackId: seg.trackId,
-          trackName: seg.trackName,
-          driftMs,
-          action: "hard_seek",
-        };
-      }
-    }
-
     const abs = Math.abs(driftMs);
 
     let quality = "good"; // good | ok | bad
@@ -304,6 +277,34 @@ export class SyncHlsPlayer {
     } else {
       quality = "bad";
       label = "RESYNCING";
+    }
+
+    // Hybrid: اول seek، اگر خیلی بد بود reload
+    if (this._cooldownOk()) {
+      if (abs > this.RELOAD_MS) {
+        this._reloadAndSeek(url, targetSec);
+        return {
+          ok: true,
+          trackId: seg.trackId,
+          trackName: seg.trackName,
+          driftMs,
+          action: "reload+seek",
+          quality,
+          play_status: this.playStatus,
+        };
+      }
+
+      if (abs > this.HARD_MS) {
+        this._hardSeek(targetSec);
+        return {
+          ok: true,
+          trackId: seg.trackId,
+          trackName: seg.trackName,
+          driftMs,
+          quality,
+          action: "hard_seek",
+        };
+      }
     }
 
     return {
