@@ -229,6 +229,7 @@ export class SyncHlsPlayer {
     }
     const seg = this.findSegment(nowS);
     if (!seg) return { ok: false };
+    this.thumbnail = seg.thumbnail;
 
     if (this.playStatus === PLAY_STATUS.PAUSED)
       return {
