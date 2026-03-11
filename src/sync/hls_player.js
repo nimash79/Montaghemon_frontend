@@ -15,7 +15,7 @@ export class SyncHlsPlayer {
     // Hybrid thresholds
     this.SOFT_MS = 70;
     this.HARD_MS = 120;
-    this.RELOAD_MS = 250;
+    this.RELOAD_MS = 1500;
 
     this.COOLDOWN_MS = 2000;
     this.lastResyncAt = 0;
@@ -70,10 +70,8 @@ export class SyncHlsPlayer {
     this.hls = new Hls({
       lowLatencyMode: false,
       backBufferLength: 30,
-
-      // کمک به پایداری روی موبایل
       maxBufferLength: 30,
-      maxMaxBufferLength: 60,
+      maxMaxBufferLength: 30,
       liveSyncDurationCount: 6,
       enableWorker: true,
     });
@@ -130,9 +128,9 @@ export class SyncHlsPlayer {
 
   _hardSeek(targetSec) {
     if (!this.audio) return;
-    this.audio.pause();
+    // this.audio.pause();
     this.audio.currentTime = Math.max(0, targetSec);
-    this.audio.play().catch(() => {});
+    // this.audio.play().catch(() => {});
     this._resyncMark();
   }
 
@@ -232,9 +230,6 @@ export class SyncHlsPlayer {
     const seg = this.findSegment(nowS);
     if (!seg) return { ok: false };
 
-    const url = seg.hlsUrl;
-    const targetSec = (nowS - seg.startMs) / 1000;
-
     if (this.playStatus === PLAY_STATUS.PAUSED)
       return {
         ok: true,
@@ -245,6 +240,10 @@ export class SyncHlsPlayer {
         quality: "ok",
         label: "PAUSED",
       };
+
+    const url = seg.hlsUrl;
+    const targetSec = (nowS - seg.startMs) / 1000;
+
 
     // اگر URL ترک عوض شده => load + seek
     if (this.lastUrl !== url) {

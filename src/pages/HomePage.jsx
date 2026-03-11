@@ -7,6 +7,7 @@ import PlayIcon from "../components/icons/MediaIcons/PlayIcon";
 import PauseIcon from "../components/icons/MediaIcons/PauseIcon";
 import { PLAY_STATUS } from "../lib/constants";
 
+// const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${import.meta.env.VITE_WS_HOST}/ws`;
 const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws`;
 import ProgressLine from "../components/media/ProgressLine";
 
@@ -105,8 +106,7 @@ const HomePage = () => {
     <>
       <StatusBar label={info?.label || "NONE"} quality={info?.quality} />
       <div className="home-page">
-        {/* <div>WS: {status}</div>
-      <div>Clock offset (ms): {offset.toFixed(2)}</div> */}
+        {/* <div style={{textAlign: "center", marginBottom: 16}}>Clock offset (ms): {offset.toFixed(2)}</div> */}
 
         <div className="player">
           <div className="first">
@@ -137,19 +137,16 @@ const HomePage = () => {
             )}
           </div>
         </div>
-
-        {/* <div>Track: {info.trackId}</div>
-      <div>Drift (ms): {Number(info.driftMs).toFixed(1)}</div>
-      <div>Action: {info.action}</div> */}
+        {/* <div style={{ textAlign: "center", marginTop: 16 }}>
+          Drift (ms): {Number(info.driftMs).toFixed(1)}
+        </div> */}
+        {/* <div>Action: {info.action}</div> */}
 
         <audio
           ref={audioRef}
           controls
           style={{ width: "100%", marginTop: 12, display: "none" }}
         />
-        {/* <p style={{ color: "#666" }}>
-        برای همگامی بهتر: در شروع چند ثانیه صبر کنید تا بافر شکل بگیرد.
-      </p> */}
       </div>
     </>
   );
