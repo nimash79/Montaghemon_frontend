@@ -65,6 +65,11 @@
   --shade4: #7f0c0c;
   --shade5: #4d0606;
 
+  /* Links */
+  --link: #7B61FF;
+  --link_hover: #ff6b6b;
+  --link_visited: #ff3d7a;
+
   /* Warnings / Success / Error */
   --warning: #c58b1f;
   --warning_light1: #ffbf3c;
@@ -153,6 +158,7 @@ ul li {
   list-style: none;
 }
 a {
+  color: var(--link);
   text-decoration: none;
 }
 p {
@@ -266,6 +272,22 @@ p {
   top: 50%;
   transform: translate(0, -50%);
   padding: 0 25px;
+}
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+.home-header > div {
+  display: flex;
+  align-items: center;
+}
+.home-header span {
+  margin-inline-start: 8px;
+}
+.home-header .guide span {
+  color: var(--link);
 }
 .home-page .player .first {
   display: flex;

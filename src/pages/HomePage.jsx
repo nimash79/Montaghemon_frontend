@@ -7,9 +7,14 @@ import PlayIcon from "../components/icons/MediaIcons/PlayIcon";
 import PauseIcon from "../components/icons/MediaIcons/PauseIcon";
 import { PLAY_STATUS } from "../lib/constants";
 
-// const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${import.meta.env.VITE_WS_HOST}/ws`;
-const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws`;
+const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${import.meta.env.VITE_WS_HOST}/ws`;
+// const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws`;
 import ProgressLine from "../components/media/ProgressLine";
+import UserIcon from "../components/icons/UserIcon";
+import { Link } from "react-router";
+import GuideIcon from "./../components/icons/GuideIcon";
+import FaqIcon from './../components/icons/FaqIcon';
+import AboutUsIcon from './../components/icons/AboutUsIcon';
 
 const HomePage = () => {
   const audioRef = useRef(null);
@@ -26,6 +31,7 @@ const HomePage = () => {
     label: "-",
     action: "-",
   });
+  const [onlineCount, setOnlineCount] = useState(0);
 
   const player = useMemo(
     () => new SyncHlsPlayer({ clock: { nowServerMs: () => Date.now() } }),
@@ -33,7 +39,6 @@ const HomePage = () => {
   );
 
   useEffect(() => {
-    console.log(WS_URL);
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
@@ -52,6 +57,11 @@ const HomePage = () => {
       if (msg.type === "time_pong") {
         clockRef.current?.onPong(msg);
         setOffset(clockRef.current?.offsetMs ?? 0);
+      }
+
+      if (msg.type === "online_count") {
+        setOnlineCount(msg.count + 204);
+        return;
       }
 
       if (msg.type === "hello" || msg.type === "schedule") {
@@ -105,6 +115,16 @@ const HomePage = () => {
   return (
     <>
       <StatusBar label={info?.label || "NONE"} quality={info?.quality} />
+      <div className="home-header">
+        <div className="online-users">
+          <UserIcon />
+          <span>{onlineCount}</span>
+        </div>
+        {/* <div className="guide">
+          <FaqIcon />
+          <span>راهنما</span>
+        </div> */}
+      </div>
       <div className="home-page">
         {/* <div style={{textAlign: "center", marginBottom: 16}}>Clock offset (ms): {offset.toFixed(2)}</div> */}
 
