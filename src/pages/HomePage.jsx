@@ -8,7 +8,6 @@ import PauseIcon from "../components/icons/MediaIcons/PauseIcon";
 import { PLAY_STATUS } from "../lib/constants";
 
 const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${import.meta.env.VITE_WS_HOST}/ws`;
-// const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws`;
 import ProgressLine from "../components/media/ProgressLine";
 import UserIcon from "../components/icons/UserIcon";
 import { Link } from "react-router";
