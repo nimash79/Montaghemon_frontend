@@ -1,5 +1,17 @@
 import Hls from "hls.js";
 import { PLAY_STATUS } from "./../lib/constants";
+import { rerr, rlog } from "../lib/remoteLogger";
+
+const DEBUG = true;
+function log(...args) {
+  if (DEBUG) rlog(args);
+}
+function warn(...args) {
+  if (DEBUG) rlog(args)
+}
+function err(...args) {
+  if (DEBUG) rerr(args);
+}
 
 export class SyncHlsPlayer {
   constructor({ clock }) {
@@ -13,8 +25,8 @@ export class SyncHlsPlayer {
     this.forceLoad = false;
 
     // Hybrid thresholds
-    this.SOFT_MS = 70;
-    this.HARD_MS = 120;
+    this.SOFT_MS = 100;
+    this.HARD_MS = 300;
     this.RELOAD_MS = 1500;
 
     this.COOLDOWN_MS = 2000;
@@ -39,6 +51,48 @@ export class SyncHlsPlayer {
 
   attach(audioEl) {
     this.audio = audioEl;
+
+    const a = this.audio;
+
+    // برای اینکه چندبار attach دوباره باعث چند لاگ نشود:
+    if (a.__debugBound) return;
+    a.__debugBound = true;
+
+    const events = [
+      "loadstart",
+      "loadedmetadata",
+      "loadeddata",
+      "canplay",
+      "canplaythrough",
+      "play",
+      "playing",
+      "pause",
+      "waiting",
+      "stalled",
+      "seeking",
+      "seeked",
+      "timeupdate",
+      "ended",
+      "error",
+      "emptied",
+      "abort",
+    ];
+
+    events.forEach((ev) => {
+      a.addEventListener(ev, () => {
+        const e = a.error
+          ? { code: a.error.code, message: a.error.message }
+          : null;
+        log(`audio:${ev}`, {
+          currentTime: a.currentTime,
+          readyState: a.readyState,
+          networkState: a.networkState,
+          paused: a.paused,
+          src: a.currentSrc || a.src,
+          error: e,
+        });
+      });
+    });
   }
 
   detach() {
@@ -60,10 +114,12 @@ export class SyncHlsPlayer {
 
     // iOS native HLS
     const canNative = this.audio.canPlayType("application/vnd.apple.mpegurl");
-    if (canNative) {
-      this.audio.src = url;
-      return;
-    }
+    log("_load called", { url, canNative });
+    // if (canNative) {
+    //   this.audio.src = url;
+    //   return;
+    // }
+
 
     // Android/others: hls.js
     this._destroyHls();
@@ -74,6 +130,61 @@ export class SyncHlsPlayer {
       maxMaxBufferLength: 30,
       liveSyncDurationCount: 6,
       enableWorker: true,
+    });
+    this.hls.on(Hls.Events.MEDIA_ATTACHED, () => log("hls:MEDIA_ATTACHED"));
+    this.hls.on(Hls.Events.MANIFEST_LOADING, (_, data) =>
+      log("hls:MANIFEST_LOADING", data.url),
+    );
+    this.hls.on(Hls.Events.MANIFEST_LOADED, (_, data) =>
+      log("hls:MANIFEST_LOADED", { levels: data.levels?.length }),
+    );
+    this.hls.on(Hls.Events.LEVEL_LOADED, (_, data) =>
+      log("hls:LEVEL_LOADED", {
+        details: { totalduration: data.details?.totalduration },
+      }),
+    );
+
+    this.hls.on(Hls.Events.FRAG_LOADING, (_, data) =>
+      log("hls:FRAG_LOADING", { sn: data.frag?.sn, url: data.frag?.url }),
+    );
+    this.hls.on(Hls.Events.FRAG_LOADED, (_, data) =>
+      log("hls:FRAG_LOADED", { sn: data.frag?.sn }),
+    );
+    this.hls.on(Hls.Events.FRAG_BUFFERED, (_, data) =>
+      log("hls:FRAG_BUFFERED", { sn: data.frag?.sn }),
+    );
+
+    this.hls.on(Hls.Events.ERROR, (_, data) => {
+      // data: {type, details, fatal, ...}
+      err("hls:ERROR", {
+        fatal: data.fatal,
+        type: data.type,
+        details: data.details,
+        response: data.response
+          ? {
+              code: data.response.code,
+              text: data.response.text,
+              url: data.response.url,
+            }
+          : null,
+      });
+
+      // این هم خیلی کمک می‌کند بفهمیم سریع disconnect/close یا 404 داریم
+      if (data.fatal) {
+        err("hls:fatal -> trying recover", data.details);
+        try {
+          // بسته به نوع خطا:
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            this.hls.startLoad();
+          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+            this.hls.recoverMediaError();
+          } else {
+            this._destroyHls();
+          }
+        } catch (e) {
+          err("recover failed", e);
+        }
+      }
     });
 
     this.hls.loadSource(url);
@@ -107,8 +218,24 @@ export class SyncHlsPlayer {
       this.audio.currentTime = Math.max(0, targetSec);
     }
 
-    await this.audio.play();
-    this.hls?.startLoad?.();
+    log("start() called", {
+      nowServerMs: this.clock.nowServerMs(),
+      lastUrl: this.lastUrl,
+    });
+
+    try {
+      await this.audio.play();
+      log("audio.play() OK");
+    } catch (e) {
+      err("audio.play() FAILED", e);
+    }
+
+    try {
+      this.hls?.startLoad?.();
+      log("hls.startLoad called");
+    } catch (e) {
+      err("hls.startLoad failed", e);
+    }
   }
 
   stop() {
@@ -244,7 +371,6 @@ export class SyncHlsPlayer {
 
     const url = seg.hlsUrl;
     const targetSec = (nowS - seg.startMs) / 1000;
-
 
     // اگر URL ترک عوض شده => load + seek
     if (this.lastUrl !== url) {
