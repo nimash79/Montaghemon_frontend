@@ -1,4 +1,4 @@
-const StatusBar = ({ label, quality }) => {
+const StatusBar = ({ quality }) => {
   const map = {
     good: { text: "وضعیت اتصال: عالی", color: "#16a34a" },
     ok: { text: "وضعیت اتصال: متوسط…", color: "#f59e0b" },

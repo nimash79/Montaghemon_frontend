@@ -366,7 +366,6 @@ export class SyncHlsPlayer {
         driftMs: 0,
         action: "paused",
         quality: "ok",
-        label: "PAUSED",
       };
 
     const url = seg.hlsUrl;
@@ -375,9 +374,8 @@ export class SyncHlsPlayer {
     // اگر URL ترک عوض شده => load + seek
     if (this.lastUrl !== url) {
       this.lastUrl = url;
-      this._load(url);
       this.thumbnail = seg.thumbnail;
-      this.audio.currentTime = Math.max(0, targetSec);
+      this._reloadAndSeek(url, targetSec);
       return {
         ok: true,
         trackId: seg.trackId,
@@ -392,17 +390,13 @@ export class SyncHlsPlayer {
     const abs = Math.abs(driftMs);
 
     let quality = "good"; // good | ok | bad
-    let label = "SYNCED"; // SYNCED | STABILIZING | RESYNCING
 
     if (abs <= this.SOFT_MS) {
       quality = "good";
-      label = "SYNCED";
     } else if (abs <= this.HARD_MS) {
       quality = "ok";
-      label = "STABILIZING";
     } else {
       quality = "bad";
-      label = "RESYNCING";
     }
 
     // Hybrid: اول seek، اگر خیلی بد بود reload
@@ -416,7 +410,6 @@ export class SyncHlsPlayer {
           driftMs,
           action: "reload+seek",
           quality,
-          play_status: this.playStatus,
         };
       }
 
@@ -440,7 +433,6 @@ export class SyncHlsPlayer {
       driftMs,
       action: Math.abs(driftMs) > this.SOFT_MS ? "drift" : "ok",
       quality,
-      label,
     };
   }
 }

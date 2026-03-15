@@ -12,8 +12,8 @@ import ProgressLine from "../components/media/ProgressLine";
 import UserIcon from "../components/icons/UserIcon";
 import { Link } from "react-router";
 import GuideIcon from "./../components/icons/GuideIcon";
-import FaqIcon from './../components/icons/FaqIcon';
-import AboutUsIcon from './../components/icons/AboutUsIcon';
+import FaqIcon from "./../components/icons/FaqIcon";
+import AboutUsIcon from "./../components/icons/AboutUsIcon";
 
 const HomePage = () => {
   const audioRef = useRef(null);
@@ -27,7 +27,6 @@ const HomePage = () => {
     trackName: "-",
     driftMs: 0,
     quality: "-",
-    label: "-",
     action: "-",
   });
   const [onlineCount, setOnlineCount] = useState(0);
@@ -89,7 +88,6 @@ const HomePage = () => {
           trackName: r.trackName,
           driftMs: r.driftMs,
           quality: r.quality,
-          label: r.label,
           action: r.action,
         });
     }, 250);
@@ -113,20 +111,18 @@ const HomePage = () => {
   }
   return (
     <>
-      <StatusBar label={info?.label || "NONE"} quality={info?.quality} />
-      <div className="home-header">
+      <StatusBar quality={info?.quality} />
+      {/* <div className="home-header">
         <div className="online-users">
           <UserIcon />
           <span>{onlineCount}</span>
         </div>
-        {/* <div className="guide">
+        <div className="guide">
           <FaqIcon />
           <span>راهنما</span>
-        </div> */}
-      </div>
+        </div>
+      </div> */}
       <div className="home-page">
-        {/* <div style={{textAlign: "center", marginBottom: 16}}>Clock offset (ms): {offset.toFixed(2)}</div> */}
-
         <div className="player">
           <div className="first">
             <img src={player?.thumbnail} alt={info.trackName} />
