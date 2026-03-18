@@ -126,6 +126,12 @@
   box-sizing: border-box;
 }
 
+body {
+  background-image: url('/background.jpg');
+  background-size: contain;
+  background-color: var(--bg0);
+}
+
 .lang-fa body,
 .lang-fa input,
 .lang-fa button {
@@ -171,13 +177,17 @@ p {
   justify-content: center;
   align-items: center;
 }
+.app-container .background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
 
 .main-layout {
   width: 100%;
   max-width: 420px;
   min-height: 100vh;
-  background-color: var(--bg0);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); */
   display: flex;
   flex-direction: column;
   color: var(--neutral_40);
@@ -210,8 +220,9 @@ p {
     margin: 0 auto;
   }
   .status-bar {
-    width: 420px;
+    width: 336px;
     margin: 0 auto;
+    margin-bottom: 32px;
   }
 }
 
@@ -322,14 +333,33 @@ p {
 /* Status Bar */
 .status-bar {
   padding: 12px;
-  color: #ffffff;
-  font-weight: bold;
-  font-size: 12px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
   position: fixed;
-  right: 0;
-  left: 0;
-  bottom: 0;
+  right: 10%;
+  left: 10%;
+  bottom: 32px;
+  background-color: var(--bg0);
+  display: flex;
+  align-items: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  border: 1px solid var(--neutral_60);
+}
+.status-bar .icon {
+  margin-inline-start: 8px;
+}
+.status-bar .text {
+  margin-inline-start: 8px;
+  flex: 1;
+  font-size: 14px;
+}
+.status-bar .text span:first-child {
+  color: #fff;
+  font-weight: bold;
+  margin-inline-end: 8px;
+}
+.status-bar .circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
 }
 /* End Status Bar */

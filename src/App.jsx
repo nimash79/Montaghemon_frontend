@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import { installRemoteLogger } from "./lib/remoteLogger";
+import { WsProvider } from "./ws/WsProvider";
 
 // installRemoteLogger({ endpoint: "https://montaghemon.site/api/client-log" });
 
@@ -27,13 +28,15 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<MainLayout />}>
-          {/* Main Pages */}
-          <Route path="/" Component={HomePage} />
-          {/* End Main Pages */}
-        </Route>
-      </Routes>
+      <WsProvider>
+        <Routes>
+          <Route element={<MainLayout />}>
+            {/* Main Pages */}
+            <Route path="/" Component={HomePage} />
+            {/* End Main Pages */}
+          </Route>
+        </Routes>
+      </WsProvider>
     </BrowserRouter>
   );
 }

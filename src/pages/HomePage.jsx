@@ -14,13 +14,13 @@ import { Link } from "react-router";
 import GuideIcon from "./../components/icons/GuideIcon";
 import FaqIcon from "./../components/icons/FaqIcon";
 import AboutUsIcon from "./../components/icons/AboutUsIcon";
+import { useWs } from "../ws/WsProvider";
 
 const HomePage = () => {
+  const { status, send, subscribe, ws } = useWs();
   const audioRef = useRef(null);
-  const wsRef = useRef(null);
   const clockRef = useRef(null);
 
-  const [status, setStatus] = useState("disconnected");
   const [offset, setOffset] = useState(0);
   const [info, setInfo] = useState({
     trackId: "-",
@@ -37,21 +37,20 @@ const HomePage = () => {
   );
 
   useEffect(() => {
-    const ws = new WebSocket(WS_URL);
-    wsRef.current = ws;
+    if (status === "disconnected") return;
+    const clock = new ClockSync(ws);
+    clockRef.current = clock;
+    player.clock = clock;
+    clock.start(1000);
 
-    ws.onopen = () => {
-      setStatus("connected");
-      const clock = new ClockSync(ws);
-      clockRef.current = clock;
-      player.clock = clock;
-      clock.start(1000);
+    return () => {
+      clockRef.current?.stop();
+      player.detach();
     };
-    ws.onclose = () => setStatus("disconnected");
+  }, [ws]);
 
-    ws.onmessage = (ev) => {
-      const msg = JSON.parse(ev.data);
-
+  useEffect(() => {
+    const unsub = subscribe((msg) => {
       if (msg.type === "time_pong") {
         clockRef.current?.onPong(msg);
         setOffset(clockRef.current?.offsetMs ?? 0);
@@ -67,16 +66,9 @@ const HomePage = () => {
         if (msg.forced) player.setForced(msg.forced);
       }
       if (msg.type === "force") player.setForced(msg.forced);
-    };
-
-    return () => {
-      try {
-        ws.close();
-      } catch {}
-      clockRef.current?.stop();
-      player.detach();
-    };
-  }, []);
+    });
+    return unsub;
+  }, [subscribe]);
 
   useEffect(() => {
     player.attach(audioRef.current);
@@ -95,7 +87,7 @@ const HomePage = () => {
   }, [player]);
 
   async function onStart() {
-    wsRef.current?.send(JSON.stringify({ type: "need_schedule" }));
+    send(JSON.stringify({ type: "need_schedule" }));
     await player.start();
   }
 
