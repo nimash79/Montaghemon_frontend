@@ -130,7 +130,7 @@ const HomePage = () => {
               playedSec={audioRef?.current?.currentTime}
               durationSec={audioRef?.current?.duration}
             />
-            <div style={{ fontSize: 20, direction: "ltr" }}>
+            <div style={{ fontSize: 20, direction: "ltr", width: "4ch" }}>
               {audioRef?.current?.currentTime
                 ? formatTime(audioRef.current.currentTime)
                 : "00:00"}

@@ -128,7 +128,7 @@
 
 body {
   background-image: url('/background.jpg');
-  background-size: contain;
+  background-size: cover;
   background-color: var(--bg0);
 }
 
@@ -203,6 +203,9 @@ p {
 }
 
 @media (min-width: 768px) {
+  body {
+    background-size: contain;
+  }
   .btn-setting-devices {
     max-width: 370px;
     margin: 0 auto;
