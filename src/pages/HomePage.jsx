@@ -20,6 +20,8 @@ const HomePage = () => {
   const { status, send, subscribe, ws } = useWs();
   const audioRef = useRef(null);
   const clockRef = useRef(null);
+  const wakeLockRef = useRef(null);
+  const [awake, setAwake] = useState(false);
 
   const [offset, setOffset] = useState(0);
   const [info, setInfo] = useState({
@@ -35,6 +37,44 @@ const HomePage = () => {
     () => new SyncHlsPlayer({ clock: { nowServerMs: () => Date.now() } }),
     [],
   );
+
+  const requestWakeLock = async () => {
+    try {
+      if (!("wakeLock" in navigator)) {
+        alert("Wake Lock API is not supported in this browser.");
+        return;
+      }
+      wakeLockRef.current = await navigator.wakeLock.request("screen");
+      setAwake(true);
+
+      wakeLockRef.current.addEventListener("release", () => {
+        setAwake(false);
+      });
+    } catch (err) {
+      console.error(err);
+      setAwake(false);
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    try {
+      await wakeLockRef.current?.release();
+      wakeLockRef.current = null;
+      setAwake(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible" && awake) {
+        requestWakeLock();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [awake]);
 
   useEffect(() => {
     if (status === "disconnected") return;
@@ -89,10 +129,12 @@ const HomePage = () => {
   async function onStart() {
     send(JSON.stringify({ type: "need_schedule" }));
     await player.start();
+    requestWakeLock();
   }
 
   function onStop() {
     player.stop();
+    releaseWakeLock();
   }
 
   function formatTime(sec) {
