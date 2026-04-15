@@ -6,6 +6,9 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import { installRemoteLogger } from "./lib/remoteLogger";
 import { WsProvider } from "./ws/WsProvider";
+import LivePage from "./pages/LivePage";
+import PlayerPage from "./pages/PlayerPage";
+import OfflinePage from "./pages/OfflinePage";
 
 // installRemoteLogger({ endpoint: "https://montaghemon.site/api/client-log" });
 
@@ -33,6 +36,9 @@ export default function App() {
           <Route element={<MainLayout />}>
             {/* Main Pages */}
             <Route path="/" Component={HomePage} />
+            <Route path="/player" Component={PlayerPage} />
+            <Route path="/live" Component={LivePage} />
+            <Route path="/offline" Component={OfflinePage} />
             {/* End Main Pages */}
           </Route>
         </Routes>

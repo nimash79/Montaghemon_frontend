@@ -157,6 +157,9 @@ const HomePage = () => {
         </div>
       </div> */}
       <div className="home-page">
+        {/* <div style={{textAlign: "center", marginBottom: 24}}>
+          <Link to={"/live"}>پخش زنده کاروان های خودرویی</Link>
+        </div> */}
         <div className="player">
           <div className="first">
             <img src={player?.thumbnail} alt={info.trackName} />
