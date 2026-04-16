@@ -40,10 +40,6 @@ const HomePage = () => {
 
   const requestWakeLock = async () => {
     try {
-      if (!("wakeLock" in navigator)) {
-        alert("Wake Lock API is not supported in this browser.");
-        return;
-      }
       wakeLockRef.current = await navigator.wakeLock.request("screen");
       setAwake(true);
 
@@ -157,9 +153,9 @@ const HomePage = () => {
         </div>
       </div> */}
       <div className="home-page">
-        {/* <div style={{textAlign: "center", marginBottom: 24}}>
-          <Link to={"/live"}>پخش زنده کاروان های خودرویی</Link>
-        </div> */}
+        <div style={{textAlign: "center", marginBottom: 24}}>
+          <Link to={"/rooms"}>پخش زنده کاروان های خودرویی</Link>
+        </div>
         <div className="player">
           <div className="first">
             <img src={player?.thumbnail} alt={info.trackName} />
@@ -169,7 +165,7 @@ const HomePage = () => {
             <div style={{ fontSize: 20, direction: "ltr" }}>
               {audioRef?.current?.duration
                 ? formatTime(audioRef.current.duration)
-                : "00:00"}
+                : "0:00"}
             </div>
             <ProgressLine
               playedSec={audioRef?.current?.currentTime}
@@ -178,7 +174,7 @@ const HomePage = () => {
             <div style={{ fontSize: 20, direction: "ltr", width: "4ch" }}>
               {audioRef?.current?.currentTime
                 ? formatTime(audioRef.current.currentTime)
-                : "00:00"}
+                : "0:00"}
             </div>
           </div>
           <div className="third">
@@ -197,7 +193,7 @@ const HomePage = () => {
         <audio
           ref={audioRef}
           controls
-          style={{ width: "100%", marginTop: 12, display: "none" }}
+          style={{ display: "none" }}
         />
       </div>
     </>

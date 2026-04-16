@@ -58,7 +58,7 @@
   --bg1: #111c33; /* cards/surfaces */
 
   /* Brand (Red) */
-  --primary: #ff2d2d; /* اصلی */
+  --primary: #7B61FF; /* اصلی */
   --shade1: #e52323;
   --shade2: #c61b1b;
   --shade3: #a91414;
@@ -239,6 +239,10 @@ p {
     max-width: 420px;
     margin: 0 auto;
   }
+  .password-modal {
+    max-width: 420px;
+    margin: 0 auto;
+  }
   .menu {
     width: 420px;
     margin: 0 auto;
@@ -308,8 +312,8 @@ p {
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  transform: translate(0, -50%);
+  top: 45%;
+  transform: translate(0, -45%);
   padding: 0 25px;
 }
 .home-header {
@@ -393,21 +397,30 @@ p {
 /* End Status Bar */
 
 /* Player Page */
-.player-page .controller {
+.controller {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin: 24px 0;
 }
-.player-page .controller span {
-  margin-inline-start: 8px;
+.controller > div {
+  display: flex;
+  align-items: center;
+}
+.controller span {
+  margin: 0 8px;
 }
 .player-page .search {
   margin: 24px 0;
 }
 .tracks {
-  margin-bottom: 54px;
+  margin-bottom: 140px;
 }
 .track {
+  background-color: var(--bg1);
+  border-radius: 12px;
+  border: 2px solid var(--link);
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -460,3 +473,73 @@ p {
   margin-top: 12px;
 }
 /* End Player Page */
+
+/* Rooms Page */
+.rooms-page .search {
+  margin: 24px 0;
+}
+.rooms {
+  margin-bottom: 140px;
+}
+.room {
+  background-color: var(--bg1);
+  border-radius: 12px;
+  border: 2px solid var(--link);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.room img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+.room-text {
+  flex: 1;
+  margin-inline-start: 12px;
+}
+.room-trackName {
+  font-size: 14px;
+  margin-top: 4px;
+  color: var(--neutral_60);
+}
+/* End Rooms Page */
+
+/* Password modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+.password-modal {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  /* background: radial-gradient(
+      98% 96.48% at 0% 3.52%,
+      #2989cf 0%,
+      #1c1b33 74.87%
+    ); */
+    background-color: #1c1b33;
+  border: 1px solid #17b9ff1a;
+  border-bottom-width: 0;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  padding: 0 20px;
+  z-index: 50;
+}
+.password-modal .title {
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center;
+  margin: 32px 0;
+}
+/* End Password modal */

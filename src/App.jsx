@@ -6,9 +6,11 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import { installRemoteLogger } from "./lib/remoteLogger";
 import { WsProvider } from "./ws/WsProvider";
-import LivePage from "./pages/LivePage";
 import PlayerPage from "./pages/PlayerPage";
 import OfflinePage from "./pages/OfflinePage";
+import RoomsPage from "./pages/RoomsPage";
+import RoomPage from "./pages/RoomPage";
+import { ToastContainer } from "react-toastify";
 
 // installRemoteLogger({ endpoint: "https://montaghemon.site/api/client-log" });
 
@@ -36,13 +38,15 @@ export default function App() {
           <Route element={<MainLayout />}>
             {/* Main Pages */}
             <Route path="/" Component={HomePage} />
-            <Route path="/player" Component={PlayerPage} />
-            <Route path="/live" Component={LivePage} />
             <Route path="/offline" Component={OfflinePage} />
+            <Route path="/player/:roomId" Component={PlayerPage} />
+            <Route path="/room/:roomId" Component={RoomPage} />
+            <Route path="/rooms" Component={RoomsPage} />
             {/* End Main Pages */}
           </Route>
         </Routes>
       </WsProvider>
+      <ToastContainer />
     </BrowserRouter>
   );
 }
