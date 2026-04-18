@@ -50,8 +50,8 @@ const RoomPage = () => {
   useEffect(() => {
     return () => {
       send({ type: "leave_room", roomId });
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
     const onVisibilityChange = () => {
@@ -204,7 +204,14 @@ const RoomPage = () => {
         <audio
           ref={audioRef}
           style={{ display: "none" }}
-          onLoadedMetadata={() => setDuration(audioRef.current.duration)}
+          onLoadedMetadata={() => {
+            setDuration(audioRef.current.duration);
+            if (audioRef.current.currentTime >= audioRef.current.duration)
+              setPlayStatus("end");
+            setCurrentTime(
+              Math.min(audioRef.current.currentTime, audioRef.current.duration),
+            );
+          }}
           onDurationChange={() => setDuration(audioRef.current.duration)}
           onTimeUpdate={() => setCurrentTime(audioRef.current.currentTime)}
           onPlay={() => setPaused(false)}

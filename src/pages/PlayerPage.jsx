@@ -38,13 +38,9 @@ const PlayerPage = () => {
     (async () => {
       const res = await getTracks();
       if (res.data.ok) {
-        const tracksWithId = res.data.tracks.map((t, i) => ({
-          ...t,
-          id: i,
-        }));
         setTotal(res.data.total);
-        setAllTracks(tracksWithId);
-        setTracks(tracksWithId);
+        setAllTracks(res.data.tracks);
+        setTracks(res.data.tracks);
       }
     })();
     return () => {
@@ -99,7 +95,7 @@ const PlayerPage = () => {
         setRoomMembers(msg.count);
         return;
       } else if (msg.type === "join_room") {
-        console.log(msg);
+        console.log("msg:", msg);
         if (msg.track.name) setActiveTrack(msg.track);
         playRoom(msg);
         requestWakeLock();
@@ -114,10 +110,6 @@ const PlayerPage = () => {
     });
     return unsub;
   }, [subscribe]);
-
-  useEffect(() => {
-    console.log("roomMembers:", roomMembers);
-  }, [roomMembers]);
 
   useEffect(() => {
     if (!audioRef.current || !room) return;
@@ -198,78 +190,87 @@ const PlayerPage = () => {
         roomId={roomId}
         setPasswordModal={setPasswordModal}
       />
-      <div className="controller">
-        <div>
-          <UserIcon />
-          <span>{room?.name}</span>
-        </div>
-        <div>
-          <span>{roomMembers}</span>
-          <UserIcon />
-        </div>
-      </div>
-      <div className="search">
-        <CustomInput
-          placeholder="جستجو ..."
-          onKeyUp={(event) => searchTracks(event.target.value)}
-        />
-      </div>
-      <div className="tracks">
-        {tracks.map((track) => (
-          <div className="track" key={track.id}>
-            <img src={track.thumbnail} />
-            <span>{track.name}</span>
-            {track.id === activeTrack?.id && !paused ? (
-              <PauseIcon width={50} height={50} onClick={pauseTrack} />
-            ) : (
-              <PlayIcon
-                width={50}
-                height={50}
-                onClick={() => {
-                  pauseTrack();
-                  setTimeout(() => {
-                    startTrack(track);
-                  }, 500);
-                }}
-              />
-            )}
-          </div>
-        ))}
-      </div>
       <audio
         ref={audioRef}
         style={{ display: "none" }}
-        onLoadedMetadata={() => setDuration(audioRef.current.duration)}
+        onLoadedMetadata={() => {
+          setDuration(audioRef.current.duration);
+          setCurrentTime(
+            Math.min(audioRef.current.currentTime, audioRef.current.duration),
+          );
+        }}
         onDurationChange={() => setDuration(audioRef.current.duration)}
         onTimeUpdate={() => setCurrentTime(audioRef.current.currentTime)}
         onPlay={() => setPaused(false)}
         onPause={() => setPaused(true)}
         onEnded={endTrack}
       />
-      <div className={`player-status ${activeTrack ? "show" : ""}`}>
-        <div className="first">
-          <img src={activeTrack?.thumbnail} />
-          <span>{activeTrack?.name}</span>
-          {paused ? (
-            <PlayIcon
-              width={50}
-              height={50}
-              onClick={() => startTrack(activeTrack)}
+      {!passwordModal && (
+        <>
+          <div className="controller">
+            <div>
+              <UserIcon />
+              <span>{room?.name}</span>
+            </div>
+            <div>
+              <span>{roomMembers}</span>
+              <UserIcon />
+            </div>
+          </div>
+          <div className="search">
+            <CustomInput
+              placeholder="جستجو ..."
+              onKeyUp={(event) => searchTracks(event.target.value)}
             />
-          ) : (
-            <PauseIcon width={50} height={50} onClick={pauseTrack} />
-          )}
-        </div>
-        <div className="second">
-          <div style={{ fontSize: 20, direction: "ltr" }}>
-            {duration ? formatTime(duration) : "0:00"}
           </div>
-          <ProgressLine playedSec={currentTime} durationSec={duration} />
-          <div style={{ fontSize: 20, direction: "ltr", width: "4ch" }}>
-            {currentTime ? formatTime(currentTime) : "0:00"}
+          <div className="tracks">
+            {tracks.map((track) => (
+              <div className="track" key={track.id}>
+                <img src={track.thumbnail} />
+                <span>{track.name}</span>
+                {track.id === activeTrack?.id && !paused ? (
+                  <PauseIcon width={50} height={50} onClick={pauseTrack} />
+                ) : (
+                  <PlayIcon
+                    width={50}
+                    height={50}
+                    onClick={() => {
+                      pauseTrack();
+                      setTimeout(() => {
+                        startTrack(track);
+                      }, 250);
+                    }}
+                  />
+                )}
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
+          <div className={`player-status ${activeTrack ? "show" : ""}`}>
+            <div className="first">
+              <img src={activeTrack?.thumbnail} />
+              <span>{activeTrack?.name}</span>
+              {paused ? (
+                <PlayIcon
+                  width={50}
+                  height={50}
+                  onClick={() => startTrack(activeTrack)}
+                />
+              ) : (
+                <PauseIcon width={50} height={50} onClick={pauseTrack} />
+              )}
+            </div>
+            <div className="second">
+              <div style={{ fontSize: 20, direction: "ltr" }}>
+                {duration ? formatTime(duration) : "0:00"}
+              </div>
+              <ProgressLine playedSec={currentTime} durationSec={duration} />
+              <div style={{ fontSize: 20, direction: "ltr", width: "4ch" }}>
+                {currentTime ? formatTime(currentTime) : "0:00"}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
