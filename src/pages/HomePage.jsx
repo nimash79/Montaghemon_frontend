@@ -28,6 +28,7 @@ const HomePage = () => {
   const [info, setInfo] = useState({
     trackId: "-",
     trackName: "-",
+    trackSinger: "-",
     driftMs: 0,
     quality: "-",
     action: "-",
@@ -116,6 +117,7 @@ const HomePage = () => {
         setInfo({
           trackId: r.trackId,
           trackName: r.trackName,
+          trackSinger: r.trackSinger,
           driftMs: r.driftMs,
           quality: r.quality,
           action: r.action,
@@ -157,7 +159,8 @@ const HomePage = () => {
         <div className="player">
           <div className="first">
             <img src={player?.thumbnail} alt={info.trackName} />
-            <span>{info.trackName}</span>
+            <div>{info.trackName}</div>
+            <span>{info.trackSinger}</span>
           </div>
           <div className="second">
             <div style={{ fontSize: 20, direction: "ltr" }}>

@@ -1,16 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { getTracks } from "../api/tracks";
 import UserIcon from "../components/icons/UserIcon";
 import PlayIcon from "../components/icons/MediaIcons/PlayIcon";
-import CustomInput from "../components/shared/CustomInput";
 import ProgressLine from "../components/media/ProgressLine";
 import PauseIcon from "../components/icons/MediaIcons/PauseIcon";
 import { useWs } from "../ws/WsProvider";
 import StatusBar from "../components/shared/StatusBar";
-import { SyncHlsPlayer } from "../sync/hls_player";
 import { ClockSync } from "../sync/clock";
-import { PLAY_STATUS } from "../lib/constants";
 import PlayStatusBar from "../components/shared/PlayStatusBar";
 import { useParams } from "react-router";
 
@@ -21,7 +17,7 @@ const RoomPage = () => {
   const [paused, setPaused] = useState(true);
   const [playedByUser, setPlayedByUser] = useState(false);
   const [playStatus, setPlayStatus] = useState();
-  const [quality, setQuality] = useState("NONE");
+  const [quality, setQuality] = useState("good");
 
   const { roomId } = useParams();
 
@@ -116,11 +112,14 @@ const RoomPage = () => {
       const drift = Math.abs(actual - desired);
       if (drift > 0.3) audioRef.current.currentTime = desired;
 
-      if (playedByUser) {
-        if (drift <= 0.3) setQuality("good");
-        else if (drift <= 0.5) setQuality("ok");
-        else setQuality("bad");
-      }
+      setPlayedByUser((p) => {
+        if (p) {
+          if (drift <= 0.3) setQuality("good");
+          else if (drift <= 0.5) setQuality("ok");
+          else setQuality("bad");
+        }
+        return p;
+      });
     }, 250);
     return () => clearInterval(interval);
   }, [room?.isPlaying]);
@@ -177,7 +176,8 @@ const RoomPage = () => {
         <div className="player">
           <div className="first">
             <img src={room?.thumbnail} alt={room?.trackName} />
-            <span>{room?.trackName}</span>
+            <div>{room?.trackName}</div>
+            <span>{room?.trackSinger}</span>
           </div>
           <div className="second">
             <div style={{ fontSize: 20, direction: "ltr" }}>

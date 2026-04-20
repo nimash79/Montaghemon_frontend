@@ -377,11 +377,16 @@ p {
   height: 100px;
   border-radius: 50%;
 }
-.home-page .player .first span {
+.home-page .player .first div {
   margin-top: 16px;
   font-size: 18px;
   font-weight: bold;
   color: var(--neutral_20);
+}
+.home-page .player .first span {
+  margin-top: 8px;
+  font-size: 16px;
+  color: var(--neutral_60);
 }
 .home-page .player .second {
   display: flex;
@@ -465,9 +470,13 @@ p {
   height: 60px;
   border-radius: 50%;
 }
-.track span {
+.track-titles {
   flex: 1;
   margin-inline-start: 12px;
+}
+.track-singer {
+  font-size: 14px;
+  color: var(--neutral_60)
 }
 .player-status {
   position: fixed;

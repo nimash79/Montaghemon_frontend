@@ -74,7 +74,10 @@ const OfflinePage = () => {
         {tracks.map((track) => (
           <div className="track" key={track.id}>
             <img src={track.thumbnail} />
-            <span>{track.name}</span>
+            <div className="track-titles">
+              <div>{track.name}</div>
+              <div className="track-singer">{track.singer}</div>
+            </div>
             {track.id === activeTrack?.id && !paused ? (
               <PauseIcon width={50} height={50} onClick={pauseTrack} />
             ) : (
@@ -100,7 +103,10 @@ const OfflinePage = () => {
       <div className={`player-status ${activeTrack ? "show" : ""}`}>
         <div className="first">
           <img src={activeTrack?.thumbnail} />
-          <span>{activeTrack?.name}</span>
+          <div className="track-titles">
+            <div>{activeTrack?.name}</div>
+            <div className="track-singer">{activeTrack?.singer}</div>
+          </div>
           {paused ? (
             <PlayIcon
               width={50}
