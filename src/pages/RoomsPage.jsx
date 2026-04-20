@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { getRooms } from "../api/rooms";
 import UserIcon from "../components/icons/UserIcon";
 import CustomInput from "../components/shared/CustomInput";
 import { Link } from "react-router";
 import ArrowLeftIcon from "./../components/icons/ArrowLeftIcon";
+import MusicIcon from "../components/icons/MusicIcon";
 
 const RoomsPage = () => {
   const [allRooms, setAllRooms] = useState([]);
@@ -34,7 +35,7 @@ const RoomsPage = () => {
     <div className="rooms-page">
       <div className="controller">
         <div>
-          <UserIcon />
+          <MusicIcon />
           <span>{total}</span>
         </div>
       </div>

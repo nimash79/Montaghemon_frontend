@@ -7,8 +7,9 @@ import PauseIcon from "../components/icons/MediaIcons/PauseIcon";
 import { useWs } from "../ws/WsProvider";
 import StatusBar from "../components/shared/StatusBar";
 import { ClockSync } from "../sync/clock";
-import PlayStatusBar from "../components/shared/PlayStatusBar";
 import { useParams } from "react-router";
+import ServerPlayStatus from "../components/shared/ServerPlayStatus";
+import MusicIcon from './../components/icons/MusicIcon';
 
 const RoomPage = () => {
   const [room, setRoom] = useState();
@@ -160,12 +161,11 @@ const RoomPage = () => {
 
   return (
     <>
-      <StatusBar quality={quality} containerStyle={{ bottom: 24 }} />
-      <PlayStatusBar status={playStatus} containerStyle={{ bottom: 88 }} />
+      <StatusBar quality={quality} />
       <div className="home-page">
         <div className="controller">
           <div>
-            <UserIcon />
+            <MusicIcon />
             <span>{room?.name}</span>
           </div>
           <div>
@@ -205,6 +205,7 @@ const RoomPage = () => {
               />
             )}
           </div>
+          <ServerPlayStatus status={playStatus} />
         </div>
 
         <audio

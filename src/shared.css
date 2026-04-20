@@ -304,3 +304,41 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border: 1px solid var(--neutral_20);
 }
 /* End Custom Dropdown */
+
+/* Server Play Status */
+.server-play-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 14px;
+  width: fit-content;
+  margin-inline: auto;
+}
+
+/* پخش فعال */
+.server-play-status.playing {
+  background: rgba(0, 200, 120, 0.12);
+  color: #3ddc97;
+}
+
+/* توقف */
+.server-play-status.paused {
+  background: rgba(255, 170, 0, 0.12);
+  color: #ffb020;
+}
+
+/* پایان */
+.server-play-status.end {
+  background: rgba(255, 60, 60, 0.12);
+  color: #ff4d4d;
+}
+
+.server-play-status .icon {
+  display: flex;
+  align-items: center;
+}
+/* End Server Play Status */

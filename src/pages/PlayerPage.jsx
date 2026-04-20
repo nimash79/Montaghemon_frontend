@@ -10,6 +10,7 @@ import { useWs } from "../ws/WsProvider";
 import { ClockSync } from "../sync/clock";
 import { useParams } from "react-router";
 import PasswordModal from "../components/modals/PasswordModal";
+import MusicIcon from "../components/icons/MusicIcon";
 
 const PlayerPage = () => {
   const [passwordModal, setPasswordModal] = useState(true);
@@ -95,7 +96,6 @@ const PlayerPage = () => {
         setRoomMembers(msg.count);
         return;
       } else if (msg.type === "join_room") {
-        console.log("msg:", msg);
         if (msg.track.name) setActiveTrack(msg.track);
         playRoom(msg);
         requestWakeLock();
@@ -209,7 +209,7 @@ const PlayerPage = () => {
         <>
           <div className="controller">
             <div>
-              <UserIcon />
+              <MusicIcon />
               <span>{room?.name}</span>
             </div>
             <div>
