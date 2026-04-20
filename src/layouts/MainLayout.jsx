@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router";
-import BackIcon from './../components/icons/BackIcon';
+import BackIcon from "./../components/icons/BackIcon";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -7,9 +7,13 @@ const MainLayout = () => {
     <div className="app-container">
       <div className="main-layout">
         <div className="header">
-          <div className="icon" onClick={() => navigate(-1)}>
-            <BackIcon />
-          </div>
+          {window.location.pathname === "/" ? (
+            <div></div>
+          ) : (
+            <div className="icon" onClick={() => navigate(-1)}>
+              <BackIcon />
+            </div>
+          )}
           <p className="header-title">منتقمون</p>
           <div></div>
         </div>

@@ -173,7 +173,7 @@ const PlayerPage = () => {
   };
 
   const searchTracks = (value) => {
-    setTracks(allTracks.filter((t) => t.name.includes(value)));
+    setTracks(allTracks.filter((t) => t.name.includes(value) || t.singer.includes(value)));
   };
 
   function formatTime(sec) {
