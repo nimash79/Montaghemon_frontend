@@ -123,10 +123,10 @@ const PlayerPage = () => {
         room.basePositionSeconds + (serverNow - room.startAtServerMs) / 1000;
       const actual = audioRef.current.currentTime;
       const drift = actual - desired;
-      if (Math.abs(drift) > 0.2) {
+      if (Math.abs(drift) > 0.3) {
         audioRef.current.currentTime = desired;
       }
-    }, 500);
+    }, 250);
     return () => clearInterval(interval);
   }, [room?.isPlaying]);
 

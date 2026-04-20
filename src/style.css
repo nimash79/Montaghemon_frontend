@@ -312,7 +312,7 @@ p {
   position: absolute;
   left: 0;
   right: 0;
-  top: 45%;
+  top: 40%;
   transform: translate(0, -45%);
   padding: 0 25px;
 }
@@ -326,12 +326,46 @@ p {
   display: flex;
   align-items: center;
 }
+.home-header .guide {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  color: #a5b4fc;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.home-header .guide:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #c7d2fe;
+}
 .home-header span {
   margin-inline-start: 8px;
 }
-.home-header .guide span {
-  color: var(--link);
+.home-header .rooms-button {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
 }
+.home-header .rooms-button:hover {
+  background: #60a5fa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+.home-header .rooms-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+}
+
 .home-page .player .first {
   display: flex;
   flex-direction: column;

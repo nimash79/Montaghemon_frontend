@@ -1,6 +1,6 @@
 import WifiIcon from './../icons/WifiIcon';
 
-const StatusBar = ({ quality }) => {
+const StatusBar = ({ quality, containerStyle }) => {
   const map = {
     good: { text: "عالی", color: "#16a34a" },
     ok: { text: "متوسط", color: "#f59e0b" },
@@ -10,7 +10,7 @@ const StatusBar = ({ quality }) => {
   const s = map[quality] || map.NONE;
 
   return (
-    <div className="status-bar">
+    <div className="status-bar" style={containerStyle}>
       <WifiIcon className="icon" />
       <div className="text">
         <span>وضعیت اتصال:</span>

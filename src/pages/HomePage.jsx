@@ -14,6 +14,7 @@ import { Link } from "react-router";
 import GuideIcon from "./../components/icons/GuideIcon";
 import FaqIcon from "./../components/icons/FaqIcon";
 import AboutUsIcon from "./../components/icons/AboutUsIcon";
+import CustomButton from "./../components/shared/CustomButton";
 import { useWs } from "../ws/WsProvider";
 
 const HomePage = () => {
@@ -69,7 +70,8 @@ const HomePage = () => {
       }
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", onVisibilityChange);
   }, [awake]);
 
   useEffect(() => {
@@ -143,19 +145,15 @@ const HomePage = () => {
     <>
       <StatusBar quality={info?.quality} />
       {/* <div className="home-header">
-        <div className="online-users">
-          <UserIcon />
-          <span>{onlineCount}</span>
-        </div>
+        <Link to={"/rooms"} className="rooms-button">
+          وارد کاروان خود شوید
+        </Link>
         <div className="guide">
-          <FaqIcon />
+          <FaqIcon color="#c7d2fe" />
           <span>راهنما</span>
         </div>
       </div> */}
       <div className="home-page">
-        {/* <div style={{textAlign: "center", marginBottom: 24}}>
-          <Link to={"/rooms"}>پخش زنده کاروان های خودرویی</Link>
-        </div> */}
         <div className="player">
           <div className="first">
             <img src={player?.thumbnail} alt={info.trackName} />
@@ -190,11 +188,7 @@ const HomePage = () => {
         </div> */}
         {/* <div>Action: {info.action}</div> */}
 
-        <audio
-          ref={audioRef}
-          controls
-          style={{ display: "none" }}
-        />
+        <audio ref={audioRef} controls style={{ display: "none" }} />
       </div>
     </>
   );

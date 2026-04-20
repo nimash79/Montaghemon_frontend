@@ -21,6 +21,7 @@ const RoomPage = () => {
   const [paused, setPaused] = useState(true);
   const [playedByUser, setPlayedByUser] = useState(false);
   const [playStatus, setPlayStatus] = useState();
+  const [quality, setQuality] = useState("NONE");
 
   const { roomId } = useParams();
 
@@ -112,11 +113,15 @@ const RoomPage = () => {
       const desired =
         room.basePositionSeconds + (serverNow - room.startAtServerMs) / 1000;
       const actual = audioRef.current.currentTime;
-      const drift = actual - desired;
-      if (Math.abs(drift) > 0.2) {
-        audioRef.current.currentTime = desired;
+      const drift = Math.abs(actual - desired);
+      if (drift > 0.3) audioRef.current.currentTime = desired;
+
+      if (playedByUser) {
+        if (drift <= 0.3) setQuality("good");
+        else if (drift <= 0.5) setQuality("ok");
+        else setQuality("bad");
       }
-    }, 500);
+    }, 250);
     return () => clearInterval(interval);
   }, [room?.isPlaying]);
 
@@ -156,7 +161,8 @@ const RoomPage = () => {
 
   return (
     <>
-      <PlayStatusBar status={playStatus} />
+      <StatusBar quality={quality} containerStyle={{ bottom: 24 }} />
+      <PlayStatusBar status={playStatus} containerStyle={{ bottom: 88 }} />
       <div className="home-page">
         <div className="controller">
           <div>

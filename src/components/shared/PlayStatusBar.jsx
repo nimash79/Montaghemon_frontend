@@ -1,6 +1,6 @@
 import WifiIcon from './../icons/WifiIcon';
 
-const PlayStatusBar = ({ status }) => {
+const PlayStatusBar = ({ status, containerStyle }) => {
   const map = {
     playing: { text: "درحال پخش", color: "#16a34a" },
     paused: { text: "توقف", color: "#f59e0b" },
@@ -10,7 +10,7 @@ const PlayStatusBar = ({ status }) => {
   const s = map[status] || map.NONE;
 
   return (
-    <div className="status-bar">
+    <div className="status-bar" style={containerStyle}>
       <WifiIcon className="icon" />
       <div className="text">
         <span>وضعیت پخش:</span>

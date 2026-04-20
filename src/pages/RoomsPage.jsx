@@ -15,10 +15,13 @@ const RoomsPage = () => {
     (async () => {
       const res = await getRooms();
       if (res.data.ok) {
-        console.log(res.data);
-        setTotal(res.data.rooms.length);
-        setAllRooms(res.data.rooms);
-        setRooms(res.data.rooms);
+        const sortedRooms = [...res.data.rooms].sort(
+          (a, b) => b.members - a.members,
+        );
+        console.log(sortedRooms);
+        setTotal(sortedRooms.length);
+        setAllRooms(sortedRooms);
+        setRooms(sortedRooms);
       }
     })();
   }, []);
