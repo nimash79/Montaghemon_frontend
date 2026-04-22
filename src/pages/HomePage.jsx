@@ -36,9 +36,15 @@ const HomePage = () => {
   const [onlineCount, setOnlineCount] = useState(0);
 
   const player = useMemo(
-    () => new SyncHlsPlayer({ clock: { nowServerMs: () => Date.now() } }),
-    [],
-  );
+  () =>
+    new SyncHlsPlayer({
+      clock: {
+        nowServerMs: () => Date.now() + (clockRef.current?.offsetMs || 0),
+      },
+    }),
+  [],
+);
+
 
   const requestWakeLock = async () => {
     try {
@@ -87,7 +93,7 @@ const HomePage = () => {
       clockRef.current?.stop();
       player.detach();
     };
-  }, []);
+  }, [ws]);
 
   useEffect(() => {
     const unsub = subscribe((msg) => {

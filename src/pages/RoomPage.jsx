@@ -188,7 +188,7 @@ const RoomPage = () => {
               {currentTime ? formatTime(currentTime) : "0:00"}
             </div>
           </div>
-          <div className={`third ${!playedByUser && room?.isPlaying ? "play-button-hint" : ""}`}>
+          <div className={`third ${!playedByUser && playStatus === "playing" ? "play-button-hint" : ""}`}>
             {!playedByUser ? (
               <PlayIcon
                 onClick={() => {
@@ -205,7 +205,7 @@ const RoomPage = () => {
               />
             )}
           </div>
-          {!playedByUser && room?.isPlaying ? (
+          {!playedByUser && playStatus === "playing" ? (
             <div className="fourth" style={{textAlign: "center", fontSize: 12}}>
               برای شنیدن پخش روی دکمه بالا کلیک کنید.
             </div>
