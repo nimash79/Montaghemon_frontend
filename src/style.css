@@ -266,37 +266,11 @@ p {
   align-items: center;
   margin-top: 16px;
 }
+.main-layout .header > div {
+  flex: 0.33;
+}
 .main-layout .header .icon {
   cursor: pointer;
-}
-.main-layout .dual-buttons {
-  display: flex;
-  justify-content: space-between;
-  background-color: var(--tint2);
-  border-radius: 8px;
-  padding: 4px;
-}
-.main-layout .dual-buttons > div:nth-child(1) {
-  margin-inline-end: 10px;
-}
-.main-layout .dual-buttons .dual-button {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 8px;
-  padding: 4px;
-  cursor: pointer;
-  color: var(--tint5);
-}
-.main-layout .dual-buttons .dual-button.active {
-  background-color: var(--shade1);
-}
-.main-layout .dual-buttons .dual-button.active p {
-  color: var(--neutral_ed);
-}
-.main-layout .dual-buttons .dual-button p {
-  margin-inline-start: 4px;
-  font-size: 12px;
 }
 .main-layout .header-title {
   font-size: 20px;
@@ -304,6 +278,7 @@ p {
   padding-bottom: 12px;
   border-bottom: 2px solid var(--neutral_40);
   color: var(--neutral_40);
+  text-align: center;
 }
 /* End Main Layout */
 
@@ -586,3 +561,23 @@ p {
   margin: 32px 0;
 }
 /* End Password modal */
+
+/* Guide Page */
+.guide-title {
+  margin-top: 16px;
+  font-weight: bold;
+  border-bottom: 2px solid var(--link);
+  padding-bottom: 8px;
+}
+.guide-description {
+  margin-top: 16px;
+  text-align: justify;
+}
+.guide-description p {
+  margin-bottom: 24px;
+  line-height: 1.8;
+}
+.guide-description a {
+  color: var(--link);
+}
+/* End Guide Page */

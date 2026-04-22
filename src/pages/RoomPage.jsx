@@ -9,7 +9,7 @@ import StatusBar from "../components/shared/StatusBar";
 import { ClockSync } from "../sync/clock";
 import { useParams } from "react-router";
 import ServerPlayStatus from "../components/shared/ServerPlayStatus";
-import MusicIcon from './../components/icons/MusicIcon';
+import MusicIcon from "./../components/icons/MusicIcon";
 
 const RoomPage = () => {
   const [room, setRoom] = useState();
@@ -188,7 +188,7 @@ const RoomPage = () => {
               {currentTime ? formatTime(currentTime) : "0:00"}
             </div>
           </div>
-          <div className="third">
+          <div className={`third ${!playedByUser && room?.isPlaying ? "play-button-hint" : ""}`}>
             {!playedByUser ? (
               <PlayIcon
                 onClick={() => {
@@ -205,6 +205,11 @@ const RoomPage = () => {
               />
             )}
           </div>
+          {!playedByUser && room?.isPlaying ? (
+            <div className="fourth" style={{textAlign: "center", fontSize: 12}}>
+              برای شنیدن پخش روی دکمه بالا کلیک کنید.
+            </div>
+          ) : null}
           <ServerPlayStatus status={playStatus} />
         </div>
 

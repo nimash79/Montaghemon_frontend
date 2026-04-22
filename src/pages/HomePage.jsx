@@ -81,12 +81,13 @@ const HomePage = () => {
     clockRef.current = clock;
     player.clock = clock;
     clock.start(1000);
+    send({ type: "need_schedule" });
 
     return () => {
       clockRef.current?.stop();
       player.detach();
     };
-  }, [ws]);
+  }, []);
 
   useEffect(() => {
     const unsub = subscribe((msg) => {
@@ -127,12 +128,14 @@ const HomePage = () => {
   }, [player]);
 
   async function onStart() {
-    send(JSON.stringify({ type: "need_schedule" }));
+    player.setPlayedByUser(true);
+    send({ type: "need_schedule" });
     await player.start();
     requestWakeLock();
   }
 
   function onStop() {
+    player.setPlayedByUser(false);
     player.stop();
     releaseWakeLock();
   }
@@ -146,15 +149,15 @@ const HomePage = () => {
   return (
     <>
       <StatusBar quality={info?.quality} />
-      {/* <div className="home-header">
+      <div className="home-header">
         <Link to={"/rooms"} className="rooms-button">
-          وارد کاروان خود شوید
+          وارد هیئت خود شوید
         </Link>
-        <div className="guide">
+        <Link to={"/guide"} className="guide">
           <FaqIcon color="#c7d2fe" />
           <span>راهنما</span>
-        </div>
-      </div> */}
+        </Link>
+      </div>
       <div className="home-page">
         <div className="player">
           <div className="first">
@@ -178,18 +181,14 @@ const HomePage = () => {
                 : "0:00"}
             </div>
           </div>
-          <div className="third">
-            {player?.playStatus !== PLAY_STATUS.PLAYING ? (
-              <PlayIcon onClick={onStart} />
-            ) : (
+          <div className={`third ${player?.playedByUser ? "": "play-button-hint"}`}>
+            {player?.playedByUser ? (
               <PauseIcon onClick={onStop} />
+            ) : (
+              <PlayIcon onClick={onStart} />
             )}
           </div>
         </div>
-        {/* <div style={{ textAlign: "center", marginTop: 16 }}>
-          Drift (ms): {Number(info.driftMs).toFixed(1)}
-        </div> */}
-        {/* <div>Action: {info.action}</div> */}
 
         <audio ref={audioRef} controls style={{ display: "none" }} />
       </div>

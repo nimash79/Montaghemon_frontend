@@ -11,6 +11,7 @@ import OfflinePage from "./pages/OfflinePage";
 import RoomsPage from "./pages/RoomsPage";
 import RoomPage from "./pages/RoomPage";
 import { ToastContainer } from "react-toastify";
+import GuidePage from "./pages/GuidePage";
 
 // installRemoteLogger({ endpoint: "https://montaghemon.site/api/client-log" });
 
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="/player/:roomId" Component={PlayerPage} />
             <Route path="/room/:roomId" Component={RoomPage} />
             <Route path="/rooms" Component={RoomsPage} />
+            <Route path="/guide" Component={GuidePage} />
             {/* End Main Pages */}
           </Route>
         </Routes>

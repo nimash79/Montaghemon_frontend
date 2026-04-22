@@ -14,7 +14,7 @@ const MainLayout = () => {
               <BackIcon />
             </div>
           )}
-          <p className="header-title">منتقمون</p>
+          <div className="header-title">منتقمون</div>
           <div></div>
         </div>
         <div className="body">

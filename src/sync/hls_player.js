@@ -21,6 +21,7 @@ export class SyncHlsPlayer {
     this.schedule = [];
     this.playStatus = PLAY_STATUS.NORMAL;
     this.thumbnail = "";
+    this.playedByUser = false;
     this.forced = null;
     this.forceLoad = false;
 
@@ -33,6 +34,10 @@ export class SyncHlsPlayer {
     this.lastResyncAt = 0;
 
     this.lastUrl = null;
+  }
+
+  setPlayedByUser(playedByUser) {
+    this.playedByUser = playedByUser;
   }
 
   setForced(forced) {
@@ -224,7 +229,7 @@ export class SyncHlsPlayer {
     });
 
     try {
-      await this.audio.play();
+      if (this.playedByUser) await this.audio.play();
       log("audio.play() OK");
     } catch (e) {
       err("audio.play() FAILED", e);
@@ -266,7 +271,7 @@ export class SyncHlsPlayer {
     // reload سبک: destroy/attach مجدد (روی بعضی driftهای عجیب بهتر جواب می‌دهد)
     this._load(url);
     this.audio.currentTime = Math.max(0, targetSec);
-    this.audio.play().catch(() => {});
+    if (this.playedByUser) this.audio.play().catch(() => {});
     this._resyncMark();
   }
 
@@ -303,7 +308,7 @@ export class SyncHlsPlayer {
     this.audio.currentTime = 0;
 
     // 7) play
-    await this.audio.play().catch(() => {});
+    if (this.playedByUser) await this.audio.play().catch(() => {});
   }
 
   waitOnce(el, event, timeoutMs = 2000) {
