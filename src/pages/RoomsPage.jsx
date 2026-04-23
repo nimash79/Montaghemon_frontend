@@ -49,12 +49,16 @@ const RoomsPage = () => {
         {rooms.map((room) => (
           <Link to={`/room/${room.roomId}`} key={room.roomId}>
             <div className="room">
-              <img src={room.logo} />
+              <div className="room-thumbnail">
+                <img src={room.logo} />
+              </div>
               <div className="room-text">
                 <div className="room-name">{room.name}</div>
-                <div className="room-trackName">
-                  افراد آنلاین: {room.members}
-                </div>
+                <div className="room-trackName">{room.city}</div>
+              </div>
+              <div className="room-members">
+                <span>{room.members}</span>
+                <UserIcon width={14} height={14} />
               </div>
               <ArrowLeftIcon />
             </div>

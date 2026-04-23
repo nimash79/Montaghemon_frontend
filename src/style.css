@@ -324,7 +324,7 @@ p {
   padding: 8px 16px;
   background: #3b82f6;
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 14px;
   font-weight: 500;
   border-radius: 8px;
   text-decoration: none;
@@ -508,18 +508,34 @@ p {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
+  position: relative;
 }
 .room img {
   width: 60px;
   height: 60px;
   border-radius: 50%;
 }
+.room-members {
+  position: absolute;
+  left: 4px;
+  top: 0px;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+.room-members span {
+  margin-inline-end: 4px;
+  font-size: 12px;
+}
 .room-text {
   flex: 1;
   margin-inline-start: 12px;
 }
+.room-name {
+  font-size: 15px;
+}
 .room-trackName {
-  font-size: 14px;
+  font-size: 12px;
   margin-top: 4px;
   color: var(--neutral_60);
 }
