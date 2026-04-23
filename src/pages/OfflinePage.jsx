@@ -23,13 +23,10 @@ const OfflinePage = () => {
     (async () => {
       const res = await getTracks();
       if (res.data.ok) {
-        const tracksWithId = res.data.tracks.map((t, i) => ({
-          ...t,
-          id: i,
-        }));
+        const reversed = [...res.data.tracks].reverse();
         setTotal(res.data.total);
-        setAllTracks(tracksWithId);
-        setTracks(tracksWithId);
+        setAllTracks(reversed);
+        setTracks(reversed);
       }
     })();
   }, []);
