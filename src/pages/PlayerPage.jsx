@@ -39,10 +39,9 @@ const PlayerPage = () => {
     (async () => {
       const res = await getTracks();
       if (res.data.ok) {
-        const reversed = [...res.data.tracks].reverse();
         setTotal(res.data.total);
-        setAllTracks(reversed);
-        setTracks(reversed);
+        setAllTracks(res.data.tracks);
+        setTracks(res.data.tracks);
       }
     })();
     return () => {
