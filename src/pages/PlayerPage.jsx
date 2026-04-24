@@ -142,8 +142,7 @@ const PlayerPage = () => {
     audioRef.current.src = msg.room.hlsUrl;
     if (msg.room.isPlaying) {
       const now = Date.now();
-      const elapsed = (now - localStart) / 1000;
-      const current = positionSeconds + Math.max(elapsed, 0);
+      const current = (Date.now() - localStart) / 1000;
       audioRef.current.currentTime = current;
       audioRef.current.play();
     } else {

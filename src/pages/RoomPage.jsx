@@ -87,6 +87,9 @@ const RoomPage = () => {
         playRoom(msg);
         requestWakeLock();
       } else if (msg.type === "play_track") {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current.src = "";
         playRoom(msg);
       } else if (msg.type === "pause_track") {
         setRoom(msg.room);
@@ -127,9 +130,6 @@ const RoomPage = () => {
 
   const playRoom = (msg) => {
     setRoom(msg.room);
-    audioRef.current.pause();
-    audioRef.current.currentTime = 0;
-    audioRef.current.src = "";
 
     const { startAtServerMs, positionSeconds } = msg;
     const offset = clockRef.current.offsetMs;
@@ -138,10 +138,10 @@ const RoomPage = () => {
     if (msg.room.isPlaying) {
       setPlayStatus("playing");
       const now = Date.now();
-      const elapsed = (now - localStart) / 1000;
-      const current = positionSeconds + Math.max(elapsed, 0);
+      const current = (now - localStart) / 1000;
       audioRef.current.currentTime = current;
       setPlayedByUser((p) => {
+        console.log(p);
         if (p) audioRef.current.play();
         return p;
       });
@@ -188,7 +188,9 @@ const RoomPage = () => {
               {currentTime ? formatTime(currentTime) : "0:00"}
             </div>
           </div>
-          <div className={`third ${!playedByUser && playStatus === "playing" ? "play-button-hint" : ""}`}>
+          <div
+            className={`third ${!playedByUser && playStatus === "playing" ? "play-button-hint" : ""}`}
+          >
             {!playedByUser ? (
               <PlayIcon
                 onClick={() => {
@@ -206,7 +208,10 @@ const RoomPage = () => {
             )}
           </div>
           {!playedByUser && playStatus === "playing" ? (
-            <div className="fourth" style={{textAlign: "center", fontSize: 12}}>
+            <div
+              className="fourth"
+              style={{ textAlign: "center", fontSize: 12 }}
+            >
               برای شنیدن پخش روی دکمه بالا کلیک کنید.
             </div>
           ) : null}
@@ -218,7 +223,10 @@ const RoomPage = () => {
           style={{ display: "none" }}
           onLoadedMetadata={() => {
             setDuration(audioRef.current.duration);
-            if (audioRef.current.currentTime >= audioRef.current.duration)
+            if (
+              audioRef.current.duration > 0 &&
+              audioRef.current.currentTime >= audioRef.current.duration - 0.3
+            )
               setPlayStatus("end");
             setCurrentTime(
               Math.min(audioRef.current.currentTime, audioRef.current.duration),
