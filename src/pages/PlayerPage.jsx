@@ -118,9 +118,7 @@ const PlayerPage = () => {
         clearInterval(interval);
         return;
       }
-      const serverNow = clockRef.current.nowServerMs();
-      const desired =
-        room.basePositionSeconds + (serverNow - room.startAtServerMs) / 1000;
+      const desired = calcCurrent(room, clockRef.current);
       const actual = audioRef.current.currentTime;
       const drift = actual - desired;
       if (Math.abs(drift) > 0.3) {
@@ -130,19 +128,25 @@ const PlayerPage = () => {
     return () => clearInterval(interval);
   }, [room?.isPlaying]);
 
+  const calcCurrent = (room, clock) => {
+    if (!room) return 0;
+
+    if (!room.isPlaying) {
+      return room.basePositionSeconds;
+    }
+
+    const serverNow = clock.nowServerMs();
+
+    return room.basePositionSeconds + (serverNow - room.startAtServerMs) / 1000;
+  };
+
   const playRoom = (msg) => {
     setRoom(msg.room);
-    audioRef.current.pause();
-    audioRef.current.currentTime = 0;
-    audioRef.current.src = "";
 
-    const { startAtServerMs, positionSeconds } = msg;
-    const offset = clockRef.current.offsetMs;
-    const localStart = startAtServerMs - offset;
+    const { positionSeconds } = msg;
     audioRef.current.src = msg.room.hlsUrl;
     if (msg.room.isPlaying) {
-      const now = Date.now();
-      const current = (Date.now() - localStart) / 1000;
+      const current = calcCurrent(msg.room, clockRef.current);
       audioRef.current.currentTime = current;
       audioRef.current.play();
     } else {

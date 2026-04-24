@@ -109,9 +109,7 @@ const RoomPage = () => {
         clearInterval(interval);
         return;
       }
-      const serverNow = clockRef.current.nowServerMs();
-      const desired =
-        room.basePositionSeconds + (serverNow - room.startAtServerMs) / 1000;
+      const desired = calcCurrent(room, clockRef.current);
       const actual = audioRef.current.currentTime;
       const drift = Math.abs(actual - desired);
       if (drift > 0.3) audioRef.current.currentTime = desired;
@@ -128,20 +126,28 @@ const RoomPage = () => {
     return () => clearInterval(interval);
   }, [room?.isPlaying]);
 
+  const calcCurrent = (room, clock) => {
+    if (!room) return 0;
+
+    if (!room.isPlaying) {
+      return room.basePositionSeconds;
+    }
+
+    const serverNow = clock.nowServerMs();
+
+    return room.basePositionSeconds + (serverNow - room.startAtServerMs) / 1000;
+  };
+
   const playRoom = (msg) => {
     setRoom(msg.room);
 
-    const { startAtServerMs, positionSeconds } = msg;
-    const offset = clockRef.current.offsetMs;
-    const localStart = startAtServerMs - offset;
+    const { positionSeconds } = msg;
     audioRef.current.src = msg.room.hlsUrl;
     if (msg.room.isPlaying) {
       setPlayStatus("playing");
-      const now = Date.now();
-      const current = (now - localStart) / 1000;
+      const current = calcCurrent(msg.room, clockRef.current);
       audioRef.current.currentTime = current;
       setPlayedByUser((p) => {
-        console.log(p);
         if (p) audioRef.current.play();
         return p;
       });
