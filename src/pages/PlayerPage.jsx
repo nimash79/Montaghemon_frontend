@@ -124,12 +124,10 @@ const PlayerPage = () => {
         clearInterval(interval);
         return;
       }
-      const desired = calcCurrent(room, clockRef.current);
+      const desired = calcCurrent(room, clockRef.current) / 1000;
       const actual = audioRef.current.currentTime;
-      const drift = actual - desired;
-      if (Math.abs(drift) > 0.3) {
-        audioRef.current.currentTime = desired;
-      }
+      const drift = Math.abs(actual - desired);
+      if (drift > 0.3) audioRef.current.currentTime = desired;
     }, 250);
     return () => clearInterval(interval);
   }, [room?.isPlaying]);
@@ -138,25 +136,25 @@ const PlayerPage = () => {
     if (!room) return 0;
 
     if (!room.isPlaying) {
-      return room.basePositionSeconds;
+      return room.basePositionMs;
     }
 
     const serverNow = clock.nowServerMs();
 
-    return room.basePositionSeconds + (serverNow - room.startAtServerMs) / 1000;
+    return room.basePositionMs + (serverNow - room.startAtServerMs);
   };
 
   const playRoom = (msg) => {
     setRoom(msg.room);
 
-    const { positionSeconds } = msg;
     audioRef.current.src = msg.room.hlsUrl;
     if (msg.room.isPlaying) {
-      const current = calcCurrent(msg.room, clockRef.current);
+      const current = calcCurrent(msg.room, clockRef.current) / 1000;
+      console.log(current);
       audioRef.current.currentTime = current;
       audioRef.current.play();
     } else {
-      audioRef.current.currentTime = positionSeconds;
+      audioRef.current.currentTime = msg.room.basePositionMs / 1000;
       audioRef.current.pause();
     }
   };
@@ -193,7 +191,7 @@ const PlayerPage = () => {
     send({ type: "send_message", message });
     setMessageModal(false);
     notif_success("اطلاعیه برای اعضا ارسال شد.");
-  }
+  };
 
   function formatTime(sec) {
     const s = Math.max(0, Math.floor(Number(sec) || 0));
@@ -242,14 +240,18 @@ const PlayerPage = () => {
               <UserIcon />
             </div>
           </div>
-          <div style={{display: "flex", alignItems: "center"}}>
-            <div className="search" style={{flex: 1, marginInlineEnd: 8}}>
-            <CustomInput
-              placeholder="جستجو ..."
-              onKeyUp={(event) => searchTracks(event.target.value)}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div className="search" style={{ flex: 1, marginInlineEnd: 8 }}>
+              <CustomInput
+                placeholder="جستجو ..."
+                onKeyUp={(event) => searchTracks(event.target.value)}
+              />
+            </div>
+            <CustomButton
+              text={"ارسال اطلاعیه"}
+              style={{ width: "30%" }}
+              onClick={() => setMessageModal(true)}
             />
-          </div>
-          <CustomButton text={"ارسال اطلاعیه"} style={{width: "30%"}} onClick={() => setMessageModal(true)} />
           </div>
           <div className="tracks">
             {tracks.map((track) => (

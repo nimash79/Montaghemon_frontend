@@ -90,9 +90,6 @@ const RoomPage = () => {
         playRoom(msg);
         requestWakeLock();
       } else if (msg.type === "play_track") {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        audioRef.current.src = "";
         playRoom(msg);
       } else if (msg.type === "pause_track") {
         setRoom(msg.room);
@@ -108,69 +105,68 @@ const RoomPage = () => {
     return unsub;
   }, [subscribe]);
 
-  useEffect(() => {
-  if (!audioRef.current || !room) return;
+    useEffect(() => {
+    if (!audioRef.current || !room) return;
 
-  const interval = setInterval(() => {
-    if (!room.isPlaying || !audioRef.current.src) {
-      clearInterval(interval);
-      return;
-    }
-    
-    const desired = calcCurrent(room, clockRef.current);
-    const actual = audioRef.current.currentTime;
-    const drift = Math.abs(actual - desired);
+    const interval = setInterval(() => {
+      if (!room.isPlaying || !audioRef.current.src) {
+        clearInterval(interval);
+        return;
+      }
 
-    if (drift > 0.3) audioRef.current.currentTime = desired;
+      const desired = calcCurrent(room, clockRef.current) / 1000;
+      const actual = audioRef.current.currentTime;
+      const drift = Math.abs(actual - desired);
 
-    let newQuality;
-    if (drift <= 0.3) newQuality = "good";
-    else if (drift <= 0.5) newQuality = "ok";
-    else newQuality = "bad";
+      if (drift > 0.3) audioRef.current.currentTime = desired;
 
-    const oldQuality = qualityRef.current;
-    if (newQuality === "bad") {
-      qualityRef.current = "bad";
-      setQuality("bad");
-      stableCounter.current = 0;
-      return;
-    }
-    if (newQuality !== oldQuality) {
-      stableCounter.current += 1;
-      if (stableCounter.current >= 6) {
-        qualityRef.current = newQuality;
-        setQuality(newQuality);
+      let newQuality;
+      if (drift <= 0.3) newQuality = "good";
+      else if (drift <= 0.5) newQuality = "ok";
+      else newQuality = "bad";
+
+      const oldQuality = qualityRef.current;
+      if (newQuality === "bad") {
+        qualityRef.current = "bad";
+        setQuality("bad");
+        stableCounter.current = 0;
+        return;
+      }
+      if (newQuality !== oldQuality) {
+        stableCounter.current += 1;
+        if (stableCounter.current >= 6) {
+          qualityRef.current = newQuality;
+          setQuality(newQuality);
+          stableCounter.current = 0;
+        }
+      } else {
         stableCounter.current = 0;
       }
-    } else {
-      stableCounter.current = 0;
-    }
 
-  }, 250);
+    }, 250);
 
-  return () => clearInterval(interval);
-}, [room?.isPlaying]);
+    return () => clearInterval(interval);
+  }, [room?.isPlaying]);
 
   const calcCurrent = (room, clock) => {
     if (!room) return 0;
 
     if (!room.isPlaying) {
-      return room.basePositionSeconds;
+      return room.basePositionMs;
     }
 
     const serverNow = clock.nowServerMs();
 
-    return room.basePositionSeconds + (serverNow - room.startAtServerMs) / 1000;
+    return room.basePositionMs + (serverNow - room.startAtServerMs);
   };
 
   const playRoom = (msg) => {
     setRoom(msg.room);
 
-    const { positionSeconds } = msg;
     audioRef.current.src = msg.room.hlsUrl;
     if (msg.room.isPlaying) {
       setPlayStatus("playing");
-      const current = calcCurrent(msg.room, clockRef.current);
+      const current = calcCurrent(msg.room, clockRef.current) / 1000;
       audioRef.current.currentTime = current;
       setPlayedByUser((p) => {
         if (p) audioRef.current.play();
@@ -178,7 +174,7 @@ const RoomPage = () => {
       });
     } else {
       setPlayStatus("paused");
-      audioRef.current.currentTime = positionSeconds;
+      audioRef.current.currentTime = msg.room.basePositionMs / 1000;
       audioRef.current.pause();
     }
   };
@@ -192,7 +188,11 @@ const RoomPage = () => {
 
   return (
     <>
-      <StatusBar quality={room?.isPlaying && !audioRef.current?.paused ? quality : "NONE"} />
+      <StatusBar
+        quality={
+          room?.isPlaying && !audioRef.current?.paused ? quality : "NONE"
+        }
+      />
       <audio ref={notificationRef} src="/notification.mp3" />
       <div className="room-page">
         <div className="controller">
@@ -206,11 +206,11 @@ const RoomPage = () => {
           </div>
         </div>
         <div className="room-message">
-            <div className="room-message-title">اطلاعیه مسئول کاروان</div>
+          <div className="room-message-title">اطلاعیه مسئول کاروان</div>
           <div className="room-message-body">
             <div className="room-message-icon">
-            <AlarmIcon color="#CBC2FB" />
-          </div>
+              <AlarmIcon color="#CBC2FB" />
+            </div>
             <div className="room-message-text">{room?.message || "..."}</div>
           </div>
         </div>
