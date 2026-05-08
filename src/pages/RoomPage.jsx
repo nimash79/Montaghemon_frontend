@@ -10,8 +10,6 @@ import { ClockSync } from "../sync/clock";
 import { useParams } from "react-router";
 import ServerPlayStatus from "../components/shared/ServerPlayStatus";
 import MusicIcon from "./../components/icons/MusicIcon";
-import AnnouncementIcon from "./../components/icons/AnnouncementIcon";
-import NoticeCard from "../components/NoticeCard";
 import AlarmIcon from "../components/icons/AlarmIcon";
 
 const RoomPage = () => {
@@ -27,6 +25,8 @@ const RoomPage = () => {
 
   const audioRef = useRef();
   const notificationRef = useRef();
+  const qualityRef = useRef("good");
+  const stableCounter = useRef(0);
 
   const { status, send, subscribe, ws } = useWs();
   const clockRef = useRef(null);
@@ -109,28 +109,47 @@ const RoomPage = () => {
   }, [subscribe]);
 
   useEffect(() => {
-    if (!audioRef.current || !room) return;
-    const interval = setInterval(() => {
-      if (!room.isPlaying || !audioRef.current.src) {
-        clearInterval(interval);
-        return;
-      }
-      const desired = calcCurrent(room, clockRef.current);
-      const actual = audioRef.current.currentTime;
-      const drift = Math.abs(actual - desired);
-      if (drift > 0.3) audioRef.current.currentTime = desired;
+  if (!audioRef.current || !room) return;
 
-      setPlayedByUser((p) => {
-        if (p) {
-          if (drift <= 0.3) setQuality("good");
-          else if (drift <= 0.5) setQuality("ok");
-          else setQuality("bad");
-        }
-        return p;
-      });
-    }, 250);
-    return () => clearInterval(interval);
-  }, [room?.isPlaying]);
+  const interval = setInterval(() => {
+    if (!room.isPlaying || !audioRef.current.src) {
+      clearInterval(interval);
+      return;
+    }
+    
+    const desired = calcCurrent(room, clockRef.current);
+    const actual = audioRef.current.currentTime;
+    const drift = Math.abs(actual - desired);
+
+    if (drift > 0.3) audioRef.current.currentTime = desired;
+
+    let newQuality;
+    if (drift <= 0.3) newQuality = "good";
+    else if (drift <= 0.5) newQuality = "ok";
+    else newQuality = "bad";
+
+    const oldQuality = qualityRef.current;
+    if (newQuality === "bad") {
+      qualityRef.current = "bad";
+      setQuality("bad");
+      stableCounter.current = 0;
+      return;
+    }
+    if (newQuality !== oldQuality) {
+      stableCounter.current += 1;
+      if (stableCounter.current >= 6) {
+        qualityRef.current = newQuality;
+        setQuality(newQuality);
+        stableCounter.current = 0;
+      }
+    } else {
+      stableCounter.current = 0;
+    }
+
+  }, 250);
+
+  return () => clearInterval(interval);
+}, [room?.isPlaying]);
 
   const calcCurrent = (room, clock) => {
     if (!room) return 0;
@@ -173,7 +192,7 @@ const RoomPage = () => {
 
   return (
     <>
-      <StatusBar quality={quality} />
+      <StatusBar quality={room?.isPlaying && !audioRef.current?.paused ? quality : "NONE"} />
       <audio ref={notificationRef} src="/notification.mp3" />
       <div className="room-page">
         <div className="controller">

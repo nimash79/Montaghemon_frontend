@@ -5,7 +5,7 @@ const StatusBar = ({ quality, containerStyle }) => {
     good: { text: "عالی", color: "#16a34a" },
     ok: { text: "متوسط", color: "#f59e0b" },
     bad: { text: "ضعیف", color: "#f3554c" },
-    NONE: { text: "نامعلوم", color: "grey" },
+    NONE: { text: "-", color: "grey" },
   };
   const s = map[quality] || map.NONE;
 
