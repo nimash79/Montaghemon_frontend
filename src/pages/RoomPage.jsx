@@ -10,6 +10,9 @@ import { ClockSync } from "../sync/clock";
 import { useParams } from "react-router";
 import ServerPlayStatus from "../components/shared/ServerPlayStatus";
 import MusicIcon from "./../components/icons/MusicIcon";
+import AnnouncementIcon from "./../components/icons/AnnouncementIcon";
+import NoticeCard from "../components/NoticeCard";
+import AlarmIcon from "../components/icons/AlarmIcon";
 
 const RoomPage = () => {
   const [room, setRoom] = useState();
@@ -23,6 +26,7 @@ const RoomPage = () => {
   const { roomId } = useParams();
 
   const audioRef = useRef();
+  const notificationRef = useRef();
 
   const { status, send, subscribe, ws } = useWs();
   const clockRef = useRef(null);
@@ -82,7 +86,6 @@ const RoomPage = () => {
         setOffset(clockRef.current?.offsetMs ?? 0);
       } else if (msg.type === "room_members") {
         setRoomMembers(msg.count);
-        return;
       } else if (msg.type === "join_room") {
         playRoom(msg);
         requestWakeLock();
@@ -97,6 +100,9 @@ const RoomPage = () => {
         audioRef.current.pause();
       } else if (msg.type === "resume_track") {
         playRoom(msg);
+      } else if (msg.type === "get_message") {
+        notificationRef.current.play();
+        setRoom(msg.room);
       }
     });
     return unsub;
@@ -168,7 +174,8 @@ const RoomPage = () => {
   return (
     <>
       <StatusBar quality={quality} />
-      <div className="home-page">
+      <audio ref={notificationRef} src="/notification.mp3" />
+      <div className="room-page">
         <div className="controller">
           <div>
             <MusicIcon />
@@ -177,6 +184,15 @@ const RoomPage = () => {
           <div>
             <span>{roomMembers}</span>
             <UserIcon />
+          </div>
+        </div>
+        <div className="room-message">
+            <div className="room-message-title">اطلاعیه مسئول کاروان</div>
+          <div className="room-message-body">
+            <div className="room-message-icon">
+            <AlarmIcon color="#CBC2FB" />
+          </div>
+            <div className="room-message-text">{room?.message || "..."}</div>
           </div>
         </div>
         <div className="player">

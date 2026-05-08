@@ -11,9 +11,13 @@ import { ClockSync } from "../sync/clock";
 import { useParams } from "react-router";
 import PasswordModal from "../components/modals/PasswordModal";
 import MusicIcon from "../components/icons/MusicIcon";
+import MessageModal from "../components/modals/MessageModal";
+import { notif_error, notif_success } from "../lib/toast";
+import CustomButton from "../components/shared/CustomButton";
 
 const PlayerPage = () => {
   const [passwordModal, setPasswordModal] = useState(true);
+  const [messageModal, setMessageModal] = useState(false);
   const [allTracks, setAllTracks] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [total, setTotal] = useState(0);
@@ -106,6 +110,8 @@ const PlayerPage = () => {
         audioRef.current.pause();
       } else if (msg.type === "resume_track") {
         playRoom(msg);
+      } else if (msg.type === "get_message") {
+        setRoom(msg.room);
       }
     });
     return unsub;
@@ -176,8 +182,18 @@ const PlayerPage = () => {
   };
 
   const searchTracks = (value) => {
-    setTracks(allTracks.filter((t) => t.name.includes(value) || t.singer.includes(value)));
+    setTracks(
+      allTracks.filter(
+        (t) => t.name.includes(value) || t.singer.includes(value),
+      ),
+    );
   };
+
+  const sendRoomMessage = (message) => {
+    send({ type: "send_message", message });
+    setMessageModal(false);
+    notif_success("اطلاعیه برای اعضا ارسال شد.");
+  }
 
   function formatTime(sec) {
     const s = Math.max(0, Math.floor(Number(sec) || 0));
@@ -192,6 +208,12 @@ const PlayerPage = () => {
         isOpen={passwordModal}
         roomId={roomId}
         setPasswordModal={setPasswordModal}
+      />
+      <MessageModal
+        isOpen={messageModal}
+        setMessageModal={setMessageModal}
+        roomMessage={room?.message}
+        onSubmit={sendRoomMessage}
       />
       <audio
         ref={audioRef}
@@ -220,11 +242,14 @@ const PlayerPage = () => {
               <UserIcon />
             </div>
           </div>
-          <div className="search">
+          <div style={{display: "flex", alignItems: "center"}}>
+            <div className="search" style={{flex: 1, marginInlineEnd: 8}}>
             <CustomInput
               placeholder="جستجو ..."
               onKeyUp={(event) => searchTracks(event.target.value)}
             />
+          </div>
+          <CustomButton text={"ارسال اطلاعیه"} style={{width: "30%"}} onClick={() => setMessageModal(true)} />
           </div>
           <div className="tracks">
             {tracks.map((track) => (

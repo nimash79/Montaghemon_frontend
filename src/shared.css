@@ -106,6 +106,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border: none;
   box-shadow: none;
 }
+
+.custom-textarea {
+  border-radius: 8px;
+  border: 1px solid var(--neutral_40);
+  min-height: 100px;
+  padding: 16px;
+  color: var(--neutral_40);
+  background-color: transparent;
+  width: 100%;
+}
 /* End Forms */
 
 /* Loading */
@@ -311,7 +321,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 8px;
   font-size: 14px;
   padding: 8px 14px;
   border-radius: 14px;
@@ -353,3 +363,40 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   100%{ transform:scale(1); }
 }
 /* End Play Button Hint */
+
+/* Player */
+.player .first {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.player .first img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+.player .first div {
+  margin-top: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--neutral_20);
+}
+.player .first span {
+  margin-top: 8px;
+  font-size: 16px;
+  color: var(--neutral_60);
+}
+.player .second {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 16px 0;
+}
+.player .third {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* End Player */

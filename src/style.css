@@ -134,13 +134,15 @@ body {
 
 .lang-fa body,
 .lang-fa input,
-.lang-fa button {
+.lang-fa button,
+.lang-fa textarea {
   font-family: "Shabnam", "Segoe UI";
   direction: rtl;
 }
 .lang-en body,
 .lang-en input,
-.lang-en button {
+.lang-en button,
+.lang-en textarea {
   font-family: "Changa One", "Segoe UI";
   direction: ltr;
 }
@@ -340,40 +342,6 @@ p {
   transform: translateY(0);
   box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
 }
-
-.home-page .player .first {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.home-page .player .first img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-}
-.home-page .player .first div {
-  margin-top: 16px;
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--neutral_20);
-}
-.home-page .player .first span {
-  margin-top: 8px;
-  font-size: 16px;
-  color: var(--neutral_60);
-}
-.home-page .player .second {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin: 24px 0;
-}
-.home-page .player .third {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 /* End Home Page */
 
 /* Status Bar */
@@ -382,7 +350,7 @@ p {
   position: fixed;
   right: 10%;
   left: 10%;
-  bottom: 32px;
+  bottom: 24px;
   background-color: var(--bg0);
   display: flex;
   align-items: center;
@@ -415,7 +383,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 24px 0;
+  margin: 16px 0;
 }
 .controller > div {
   display: flex;
@@ -597,3 +565,63 @@ p {
   color: var(--link);
 }
 /* End Guide Page */
+
+/* Room Page */
+.room-message {
+  background-color: #1B1848;
+  border: 1px solid #5F4FB2;
+  border-radius: 24px;
+  height: 130px;
+  margin-bottom: 16px;
+}
+.room-message-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid #5F4FB2;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  margin: 0 16px;
+  /* margin-top: 25px;ww  qwwww   w */
+}
+.room-message-body {
+  flex: 1;
+  margin-inline-end: 8px;
+  display: flex;
+}
+.room-message-title {
+  margin: 4px 0;
+  color: #8373E5;
+  font-size: 16px;
+  text-align: center;
+  height: 24px;
+}
+.room-message-text {
+  font-size: 13px;
+  max-height: 90px;
+  overflow: auto;
+  margin-bottom: 8px;
+  text-align: justify;
+  padding-inline-end: 8px;
+}
+/* width */
+.room-message-text::-webkit-scrollbar {
+  width: 4px;
+  display: block;
+}
+
+/* Track */
+.room-message-text::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 14px;
+}
+
+/* Handle */
+.room-message-text::-webkit-scrollbar-thumb {
+  background: var(--neutral_60);
+  border-radius: 14px;
+  border: 1px solid var(--neutral_20);
+}
+/* End Room Page */
