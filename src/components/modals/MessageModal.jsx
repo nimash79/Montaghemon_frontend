@@ -34,11 +34,18 @@ const MessageModal = ({ isOpen, setMessageModal, roomMessage, onSubmit }) => {
               containerStyle={{ marginBottom: 32 }}
               onChange={(e) => setMessage(e.target.value)}
             />
+            <div style={{display: "flex", justifyContent: "space-between"}}>
+              <CustomButton
+              text={"پاک کردن"}
+              style={{ marginBottom: 32, width: "45%", backgroundColor: "#ff3b3b" }}
+              onClick={() => onSubmit("")}
+            />
             <CustomButton
               text={"ارسال"}
-              style={{ marginBottom: 32 }}
+              style={{ marginBottom: 32, width: "45%" }}
               onClick={() => onSubmit(message)}
             />
+            </div>
           </motion.div>
         </>
       )}
