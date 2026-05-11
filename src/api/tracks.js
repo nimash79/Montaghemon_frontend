@@ -6,3 +6,11 @@ export const getTracks = async () => {
     const tracks = await axios.get(`${API_URL}/tracks`);
     return tracks;
 }
+
+export const addFavorite = async ({roomId, trackId}) => {
+    return axios.post(`${API_URL}/tracks/add-favorite`, {roomId, trackId});
+}
+
+export const removeFavorite = async ({roomId, trackId}) => {
+    return axios.post(`${API_URL}/tracks/remove-favorite`, {roomId, trackId});
+}

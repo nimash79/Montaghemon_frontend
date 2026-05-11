@@ -12,6 +12,7 @@ const OfflinePage = () => {
   const [tracks, setTracks] = useState([]);
   const [total, setTotal] = useState(0);
   const [activeTrack, setActiveTrack] = useState();
+  const [activeIndex, setActiveIndex] = useState();
 
   const [duration, setDuration] = useState();
   const [currentTime, setCurrentTime] = useState();
@@ -30,8 +31,9 @@ const OfflinePage = () => {
     })();
   }, []);
 
-  const startTrack = (track) => {
+  const startTrack = (track, index) => {
     setActiveTrack(track);
+    setActiveIndex(index);
     if (audioRef.current.src !== track.hlsUrl)
       audioRef.current.src = track.hlsUrl;
     audioRef.current.play();
@@ -42,9 +44,9 @@ const OfflinePage = () => {
   };
 
   const endTrack = () => {
-    if (allTracks[activeTrack.id + 1])
-      startTrack(allTracks[activeTrack.id + 1]);
-    else startTrack(allTracks[0]);
+    if (allTracks[activeIndex + 1])
+      startTrack(allTracks[activeIndex + 1], activeIndex + 1);
+    else startTrack(allTracks[0], 0);
   };
 
   const searchTracks = (value) => {
@@ -66,27 +68,27 @@ const OfflinePage = () => {
     <div className="player-page">
       <div className="fixed-top">
         <div className="search">
-        <CustomInput
-          placeholder="جستجو ..."
-          onKeyUp={(event) => searchTracks(event.target.value)}
-        />
-      </div>
+          <CustomInput
+            placeholder="جستجو ..."
+            onKeyUp={(event) => searchTracks(event.target.value)}
+          />
+        </div>
       </div>
       <div className="tracks">
-        {tracks.map((track) => (
-          <div className="track" key={track.id}>
+        {tracks.map((track, index) => (
+          <div className="track" key={track._id}>
             <img src={track.thumbnail} />
             <div className="track-titles">
               <div>{track.name}</div>
               <div className="track-singer">{track.singer}</div>
             </div>
-            {track.id === activeTrack?.id && !paused ? (
+            {track._id === activeTrack?._id && !paused ? (
               <PauseIcon width={50} height={50} onClick={pauseTrack} />
             ) : (
               <PlayIcon
                 width={50}
                 height={50}
-                onClick={() => startTrack(track)}
+                onClick={() => startTrack(track, index)}
               />
             )}
           </div>
@@ -113,7 +115,7 @@ const OfflinePage = () => {
             <PlayIcon
               width={50}
               height={50}
-              onClick={() => startTrack(activeTrack)}
+              onClick={() => startTrack(activeTrack, activeIndex)}
             />
           ) : (
             <PauseIcon width={50} height={50} onClick={pauseTrack} />

@@ -436,6 +436,12 @@ p {
   font-size: 14px;
   color: var(--neutral_60)
 }
+.track-favorite {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 .player-status {
   position: fixed;
   right: 0;

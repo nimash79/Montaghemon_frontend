@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { getTracks } from "../api/tracks";
+import { addFavorite, getTracks, removeFavorite } from "../api/tracks";
 import UserIcon from "../components/icons/UserIcon";
 import PlayIcon from "../components/icons/MediaIcons/PlayIcon";
 import CustomInput from "../components/shared/CustomInput";
@@ -14,6 +14,8 @@ import MusicIcon from "../components/icons/MusicIcon";
 import MessageModal from "../components/modals/MessageModal";
 import { notif_error, notif_success } from "../lib/toast";
 import CustomButton from "../components/shared/CustomButton";
+import PlusIcon from "./../components/icons/PlusIcon";
+import CheckIcon from "../components/icons/CheckIcon";
 
 const PlayerPage = () => {
   const [passwordModal, setPasswordModal] = useState(true);
@@ -22,6 +24,7 @@ const PlayerPage = () => {
   const [tracks, setTracks] = useState([]);
   const [total, setTotal] = useState(0);
   const [activeTrack, setActiveTrack] = useState();
+  const [activeIndex, setActiveIndex] = useState();
   const [room, setRoom] = useState();
 
   const [duration, setDuration] = useState();
@@ -40,14 +43,6 @@ const PlayerPage = () => {
   const [roomMembers, setRoomMembers] = useState(0);
 
   useEffect(() => {
-    (async () => {
-      const res = await getTracks();
-      if (res.data.ok) {
-        setTotal(res.data.total);
-        setAllTracks(res.data.tracks);
-        setTracks(res.data.tracks);
-      }
-    })();
     return () => {
       send({ type: "leave_room", roomId });
     };
@@ -103,6 +98,26 @@ const PlayerPage = () => {
         if (msg.track.name) setActiveTrack(msg.track);
         playRoom(msg);
         requestWakeLock();
+        (async () => {
+          const res = await getTracks();
+          if (res.data.ok) {
+            setTotal(res.data.total);
+            // include favorites and sort
+            const favoriteSet = new Set(
+              msg.room.favorites.map((id) => id.toString()),
+            );
+
+            let allTracksWithFavorite = res.data.tracks.map((track, index) => ({
+              ...track,
+              originalIndex: index,
+              isFavorite: favoriteSet.has(track._id.toString()),
+            }));
+            allTracksWithFavorite = sortTracks(allTracksWithFavorite);
+
+            setAllTracks(allTracksWithFavorite);
+            setTracks(allTracksWithFavorite);
+          }
+        })();
       } else if (msg.type === "play_track") {
         playRoom(msg);
       } else if (msg.type === "pause_track") {
@@ -159,8 +174,9 @@ const PlayerPage = () => {
     }
   };
 
-  const startTrack = (track) => {
+  const startTrack = (track, index) => {
     setActiveTrack(track);
+    setActiveIndex(index);
     if (audioRef.current.src !== track.hlsUrl)
       send({ type: "start_track", roomId, track });
     else send({ type: "resume_track", roomId });
@@ -173,9 +189,9 @@ const PlayerPage = () => {
   const endTrack = () => {
     pauseTrack();
     setTimeout(() => {
-      if (allTracks[activeTrack.id + 1])
-        startTrack(allTracks[activeTrack.id + 1]);
-      else startTrack(allTracks[0]);
+      if (allTracks[activeIndex + 1])
+        startTrack(allTracks[activeIndex + 1], activeIndex + 1);
+      else startTrack(allTracks[0], 0);
     }, 500);
   };
 
@@ -199,6 +215,42 @@ const PlayerPage = () => {
     const r = s % 60;
     return `${m}:${String(r).padStart(2, "0")}`;
   }
+
+  const sortTracks = (list) => {
+    return [...list].sort((a, b) => {
+      if (b.isFavorite !== a.isFavorite) {
+        return b.isFavorite - a.isFavorite;
+      }
+      return a.originalIndex - b.originalIndex;
+    });
+  };
+
+  const toggleFavorite = async (trackId) => {
+    try {
+      const track = allTracks.find((t) => t._id === trackId);
+      if (!track) return;
+
+      const isFavorite = track.isFavorite;
+
+      if (isFavorite) {
+        await removeFavorite({ roomId: room._id, trackId });
+      } else {
+        await addFavorite({ roomId: room._id, trackId });
+      }
+
+      const update = (prev) =>
+        sortTracks(
+          prev.map((t) =>
+            t._id === trackId ? { ...t, isFavorite: !isFavorite } : t,
+          ),
+        );
+
+      setTracks((prev) => update(prev));
+      setAllTracks((prev) => update(prev));
+    } catch (error) {
+      console.error("Toggle favorite error:", error);
+    }
+  };
 
   return (
     <div className="player-page">
@@ -232,38 +284,48 @@ const PlayerPage = () => {
         <>
           <div className="fixed-top">
             <div className="controller">
-            <div>
-              <MusicIcon />
-              <span>{room?.name}</span>
+              <div>
+                <MusicIcon />
+                <span>{room?.name}</span>
+              </div>
+              <div>
+                <span>{roomMembers}</span>
+                <UserIcon />
+              </div>
             </div>
-            <div>
-              <span>{roomMembers}</span>
-              <UserIcon />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div className="search" style={{ flex: 1, marginInlineEnd: 8 }}>
-              <CustomInput
-                placeholder="جستجو ..."
-                onKeyUp={(event) => searchTracks(event.target.value)}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div className="search" style={{ flex: 1, marginInlineEnd: 8 }}>
+                <CustomInput
+                  placeholder="جستجو ..."
+                  onKeyUp={(event) => searchTracks(event.target.value)}
+                />
+              </div>
+              <CustomButton
+                text={"ارسال اطلاعیه"}
+                style={{ width: "30%" }}
+                onClick={() => setMessageModal(true)}
               />
             </div>
-            <CustomButton
-              text={"ارسال اطلاعیه"}
-              style={{ width: "30%" }}
-              onClick={() => setMessageModal(true)}
-            />
-          </div>
           </div>
           <div className="tracks">
-            {tracks.map((track) => (
-              <div className="track" key={track.id}>
+            {tracks.map((track, index) => (
+              <div className="track" key={track._id}>
                 <img src={track.thumbnail} />
                 <div className="track-titles">
                   <div>{track.name}</div>
                   <div className="track-singer">{track.singer}</div>
                 </div>
-                {track.id === activeTrack?.id && !paused ? (
+                <div
+                  className="track-favorite"
+                  onClick={() => toggleFavorite(track._id)}
+                >
+                  {track.isFavorite ? (
+                    <CheckIcon borderWidth={0} color={"#00b37e"} />
+                  ) : (
+                    <PlusIcon />
+                  )}
+                </div>
+                {track._id === activeTrack?._id && !paused ? (
                   <PauseIcon width={50} height={50} onClick={pauseTrack} />
                 ) : (
                   <PlayIcon
@@ -272,7 +334,7 @@ const PlayerPage = () => {
                     onClick={() => {
                       pauseTrack();
                       setTimeout(() => {
-                        startTrack(track);
+                        startTrack(track, index);
                       }, 250);
                     }}
                   />
@@ -291,7 +353,7 @@ const PlayerPage = () => {
                 <PlayIcon
                   width={50}
                   height={50}
-                  onClick={() => startTrack(activeTrack)}
+                  onClick={() => startTrack(activeTrack, activeIndex)}
                 />
               ) : (
                 <PauseIcon width={50} height={50} onClick={pauseTrack} />
