@@ -207,15 +207,20 @@ p {
 .main-layout {
   width: 100%;
   max-width: 420px;
-  min-height: 100vh;
-  max-height: 100vh;
-  overflow: auto;
+  height: 100vh;
+  overflow: hidden;
   /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); */
   display: flex;
   flex-direction: column;
   color: var(--neutral_40);
   padding: 0 25px;
   position: relative;
+}
+.main-layout .body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {
@@ -379,6 +384,14 @@ p {
 /* End Status Bar */
 
 /* Player Page */
+.player-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.fixed-top {
+  flex-shrink: 0;
+}
 .controller {
   display: flex;
   align-items: center;
@@ -396,7 +409,9 @@ p {
   margin: 24px 0;
 }
 .tracks {
-  margin-bottom: 140px;
+  padding-bottom: 140px;
+  flex: 1;
+  overflow-y: auto;
 }
 .track {
   background-color: var(--bg1);
@@ -578,13 +593,12 @@ p {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 56px;
+  min-width: 56px;
   height: 56px;
   border-radius: 50%;
   border: 1px solid #5F4FB2;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
   margin: 0 16px;
-  /* margin-top: 25px;ww  qwwww   w */
 }
 .room-message-body {
   flex: 1;

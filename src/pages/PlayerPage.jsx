@@ -230,7 +230,8 @@ const PlayerPage = () => {
       />
       {!passwordModal && (
         <>
-          <div className="controller">
+          <div className="fixed-top">
+            <div className="controller">
             <div>
               <MusicIcon />
               <span>{room?.name}</span>
@@ -252,6 +253,7 @@ const PlayerPage = () => {
               style={{ width: "30%" }}
               onClick={() => setMessageModal(true)}
             />
+          </div>
           </div>
           <div className="tracks">
             {tracks.map((track) => (

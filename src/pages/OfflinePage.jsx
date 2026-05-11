@@ -48,7 +48,11 @@ const OfflinePage = () => {
   };
 
   const searchTracks = (value) => {
-    setTracks(allTracks.filter((t) => t.name.includes(value)));
+    setTracks(
+      allTracks.filter(
+        (t) => t.name.includes(value) || t.singer.includes(value),
+      ),
+    );
   };
 
   function formatTime(sec) {
@@ -60,11 +64,13 @@ const OfflinePage = () => {
 
   return (
     <div className="player-page">
-      <div className="search">
+      <div className="fixed-top">
+        <div className="search">
         <CustomInput
           placeholder="جستجو ..."
           onKeyUp={(event) => searchTracks(event.target.value)}
         />
+      </div>
       </div>
       <div className="tracks">
         {tracks.map((track) => (
