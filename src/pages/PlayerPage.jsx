@@ -16,8 +16,10 @@ import { notif_error, notif_success } from "../lib/toast";
 import CustomButton from "../components/shared/CustomButton";
 import PlusIcon from "./../components/icons/PlusIcon";
 import CheckIcon from "../components/icons/CheckIcon";
+import LoadingModal from './../components/modals/LoadingModal';
 
 const PlayerPage = () => {
+  const [loadingModal, setLoadingModal] = useState(true);
   const [passwordModal, setPasswordModal] = useState(true);
   const [messageModal, setMessageModal] = useState(false);
   const [allTracks, setAllTracks] = useState([]);
@@ -102,6 +104,7 @@ const PlayerPage = () => {
           const res = await getTracks();
           if (res.data.ok) {
             setTotal(res.data.total);
+            console.log("res:", res.data);
             // include favorites and sort
             const favoriteSet = new Set(
               msg.room.favorites.map((id) => id.toString()),
@@ -117,6 +120,7 @@ const PlayerPage = () => {
             setAllTracks(allTracksWithFavorite);
             setTracks(allTracksWithFavorite);
           }
+          setLoadingModal(false);
         })();
       } else if (msg.type === "play_track") {
         playRoom(msg);
@@ -259,6 +263,7 @@ const PlayerPage = () => {
         roomId={roomId}
         setPasswordModal={setPasswordModal}
       />
+      <LoadingModal isOpen={loadingModal} />
       <MessageModal
         isOpen={messageModal}
         setMessageModal={setMessageModal}
