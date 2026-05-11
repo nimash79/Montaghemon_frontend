@@ -104,7 +104,6 @@ const PlayerPage = () => {
           const res = await getTracks();
           if (res.data.ok) {
             setTotal(res.data.total);
-            console.log("res:", res.data);
             // include favorites and sort
             const favoriteSet = new Set(
               msg.room.favorites.map((id) => id.toString()),
@@ -169,7 +168,6 @@ const PlayerPage = () => {
     audioRef.current.src = msg.room.hlsUrl;
     if (msg.room.isPlaying) {
       const current = calcCurrent(msg.room, clockRef.current) / 1000;
-      console.log(current);
       audioRef.current.currentTime = current;
       audioRef.current.play();
     } else {
