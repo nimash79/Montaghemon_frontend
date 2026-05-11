@@ -486,7 +486,9 @@ p {
   margin: 24px 0;
 }
 .rooms {
-  margin-bottom: 140px;
+  padding-bottom: 140px;
+  flex: 1;
+  overflow-y: auto;
 }
 .room {
   background-color: var(--bg1);
@@ -568,6 +570,10 @@ p {
 /* End Password modal */
 
 /* Guide Page */
+.guide-page {
+  flex: 1;
+  overflow-y: auto;
+}
 .guide-title {
   margin-top: 16px;
   font-weight: bold;
