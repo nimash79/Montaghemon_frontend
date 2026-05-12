@@ -253,7 +253,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 /* Custom Dropdown */
 .custom-dropdown {
   position: relative;
-  width: 71px;
 }
 .custom-dropdown-button {
   border: 1px solid var(--neutral_40);
@@ -295,6 +294,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 .custom-dropdown .options div:last-child {
   margin-bottom: 0;
+}
+.custom-dropdown .options .active {
+  background-color: var(--neutral_f9);
 }
 /* width */
 .custom-dropdown .options::-webkit-scrollbar {
@@ -418,3 +420,20 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   color: #c7d2fe;
 }
 /* End Guide Button */
+
+/* Custom Checkbox */
+.custom-checkbox {
+  border-radius: 7px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--primary_200);
+  cursor: pointer;
+  background-color: var(--tint0);
+}
+.custom-checkbox.active {
+  border: 2px solid var(--secondary_300);
+}
+/* End Custom Checkbox */

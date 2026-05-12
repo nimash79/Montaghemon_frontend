@@ -641,3 +641,18 @@ p {
   border: 1px solid var(--neutral_20);
 }
 /* End Room Page */
+
+/* Form Page */
+.form-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+}
+.form-title {
+  text-align: center;
+  margin: 16px auto;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary);
+  font-size: 18px;
+}
+/* End Form Page */

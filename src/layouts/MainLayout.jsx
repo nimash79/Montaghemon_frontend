@@ -4,12 +4,18 @@ import FaqIcon from "../components/icons/FaqIcon";
 import { useState } from "react";
 import RoomGuideModal from "../components/modals/RoomGuideModal";
 
+const noNeedPages = [
+  "/",
+  "/add-track",
+  "/add-room",
+]
+
 const MainLayout = () => {
   const navigate = useNavigate();
   const [roomGuideModal, setRoomGuideModal] = useState(false);
 
   const renderButton = () => {
-    if (window.location.pathname === "/") return (<div></div>)
+    if (noNeedPages.includes(window.location.pathname)) return (<div></div>)
     else if (window.location.pathname.startsWith("/player"))
       return (
         <div to={"/guide"} className="guide" onClick={() => setRoomGuideModal(true)}>
