@@ -284,30 +284,6 @@ export class SyncHlsPlayer {
     if (!this.audio || !this.schedule.length) return { ok: false };
 
     const nowS = this.clock.nowServerMs();
-    if (this.forced && nowS >= this.forced.atServerMs) {
-      const forced = this.forced;
-
-      this.thumbnail = forced.thumbnail;
-
-      if (!this.forceLoad) {
-        console.log("FORCE SWITCH:", forced);
-        this.forceSwitchTo({
-          hlsUrl: forced.hlsUrl,
-        }).catch((e) => console.error("forceSwitchTo failed:", e));
-        this.forceLoad = true;
-      }
-      if (nowS >= forced.atServerMs + forced.durationMs) {
-        this.forced = null;
-        this.forceLoad = false;
-      }
-      return {
-        ok: true,
-        trackId: forced.trackId,
-        trackName: forced.name,
-        driftMs: 0,
-        action: "forced",
-      };
-    }
     const seg = this.findSegment(nowS);
     if (!seg) return { ok: false };
     this.thumbnail = seg.thumbnail;
