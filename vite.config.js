@@ -1,10 +1,17 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   plugins: [
     react(),
+    visualizer({
+      open: true,
+      filename: "stats.html",
+      gzipSize: true,
+      brotliSize: true,
+    }),
     // VitePWA({
     //   registerType: "autoUpdate",
     //   manifest: {
@@ -18,7 +25,7 @@ export default defineConfig({
     //   },
     // }),
   ],
-   define: {
-    __APP_VERSION__: JSON.stringify(Date.now())
-  }
+  define: {
+    __APP_VERSION__: JSON.stringify(Date.now()),
+  },
 });

@@ -58,10 +58,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   background-color: var(--bg_0);
   color: var(--primary);
 }
-.lang-en .custom-button {
-  font-family: "Changa One", 'Segoe UI';
-}
-.lang-fa .custom-button {
+.custom-button {
   font-family: "Shabnam", 'Segoe UI';
 }
 .custom-save-accordion {
@@ -189,10 +186,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   background-color: var(--neutral_ed);
   padding: 10px;
 }
-.lang-en .custom-table.with-header {
-  border-top-left-radius: 0;
-}
-.lang-fa .custom-table.with-header {
+.custom-table.with-header {
   border-top-right-radius: 0;
 }
 .custom-table {

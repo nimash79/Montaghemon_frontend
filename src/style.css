@@ -132,19 +132,12 @@ body {
   background-color: var(--bg0);
 }
 
-.lang-fa body,
-.lang-fa input,
-.lang-fa button,
-.lang-fa textarea {
+body,
+input,
+button,
+textarea {
   font-family: "Shabnam", "Segoe UI";
   direction: rtl;
-}
-.lang-en body,
-.lang-en input,
-.lang-en button,
-.lang-en textarea {
-  font-family: "Changa One", "Segoe UI";
-  direction: ltr;
 }
 
 input[type="submit"],
