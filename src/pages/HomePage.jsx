@@ -154,7 +154,7 @@ const HomePage = () => {
   }
   return (
     <>
-      <StatusBar quality={info?.quality} />
+      <StatusBar quality={audioRef?.current?.paused ? "NONE" : info?.quality} />
       <div className="home-header">
         <Link to={"/rooms"} className="rooms-button">
           وارد هیئت خود شوید

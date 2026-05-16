@@ -10,6 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 const AddRoomPage = () => {
   const [adminModal, setAdminModal] = useState(true);
   const [message, setMessage] = useState("");
+  const [result, setResult] = useState("");
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [password, setPassword] = useState("");
@@ -43,6 +44,7 @@ const AddRoomPage = () => {
 
       if (res.data.ok) {
         setMessage("کاروان با موفقیت اضافه شد ✅");
+        setResult(`id: ${res.data.roomId}       password: ${password}`)
         // ریست فرم
         setName("");
         setCity("");
@@ -100,6 +102,11 @@ const AddRoomPage = () => {
           {message && (
             <p style={{ marginTop: "12px", color: message.includes("✅") ? "green" : "red" }}>
               {message}
+            </p>
+          )}
+          {result && (
+            <p style={{ marginTop: "12px", color: "white" }}>
+              {result}
             </p>
           )}
         </>
