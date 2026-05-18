@@ -28,7 +28,7 @@ const RoomsPage = () => {
   }, []);
 
   const searchRooms = (value) => {
-    setRooms(allRooms.filter((t) => t.name.includes(value)));
+    setRooms(allRooms.filter((t) => t.name.includes(value) || t.city.includes(value)));
   };
 
   return (
