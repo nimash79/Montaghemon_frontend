@@ -37,7 +37,7 @@ const AddTrackPage = () => {
 
   const submit = async () => {
     try {
-      if (!name || !singers || !thumbnail) {
+      if (!name || !singers) {
         return setMessage("تمام فیلدهای ضروری را پر کنید.");
       }
 
