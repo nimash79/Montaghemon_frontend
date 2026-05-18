@@ -214,7 +214,7 @@ const PlayerPage = () => {
         return false;
       }
     }
-    if (!isValidUrl(link)) {
+    if (link.length && !isValidUrl(link)) {
       notif_error("لینک وارد شده معتبر نمی باشد.");
       return;
     }
