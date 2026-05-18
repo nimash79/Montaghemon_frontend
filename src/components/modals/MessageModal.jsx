@@ -4,8 +4,9 @@ import CustomInput from "../shared/CustomInput";
 import CustomButton from "../shared/CustomButton";
 import CustomTextArea from "../shared/CustomTextArea";
 
-const MessageModal = ({ isOpen, setMessageModal, roomMessage, onSubmit }) => {
+const MessageModal = ({ isOpen, setMessageModal, roomMessage, roomLink, onSubmit }) => {
   const [message, setMessage] = useState("");
+  const [link, setLink] = useState("");
   return (
     <AnimatePresence>
       {isOpen && (
@@ -31,19 +32,24 @@ const MessageModal = ({ isOpen, setMessageModal, roomMessage, onSubmit }) => {
             <CustomTextArea
               defaultValue={roomMessage}
               placeholder={"اطلاعیه خود را بنویسید ..."}
-              containerStyle={{ marginBottom: 32 }}
               onChange={(e) => setMessage(e.target.value)}
+            />
+            <CustomInput
+              placeholder={"لینک را وارد کنید ..."}
+              defaultValue={roomLink}
+              containerStyle={{ marginBottom: 8 }}
+              onChange={(e) => setLink(e.target.value)}
             />
             <div style={{display: "flex", justifyContent: "space-between"}}>
               <CustomButton
               text={"پاک کردن"}
               style={{ marginBottom: 32, width: "45%", backgroundColor: "#ff3b3b" }}
-              onClick={() => onSubmit("")}
+              onClick={() => onSubmit("", link)}
             />
             <CustomButton
               text={"ارسال"}
               style={{ marginBottom: 32, width: "45%" }}
-              onClick={() => onSubmit(message)}
+              onClick={() => onSubmit(message, link || roomLink)}
             />
             </div>
           </motion.div>

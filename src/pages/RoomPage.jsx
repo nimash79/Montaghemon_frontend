@@ -7,7 +7,7 @@ import PauseIcon from "../components/icons/MediaIcons/PauseIcon";
 import { useWs } from "../ws/WsProvider";
 import StatusBar from "../components/shared/StatusBar";
 import { ClockSync } from "../sync/clock";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import ServerPlayStatus from "../components/shared/ServerPlayStatus";
 import MusicIcon from "./../components/icons/MusicIcon";
 import AlarmIcon from "../components/icons/AlarmIcon";
@@ -105,7 +105,7 @@ const RoomPage = () => {
     return unsub;
   }, [subscribe]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!audioRef.current || !room) return;
 
     const interval = setInterval(() => {
@@ -211,7 +211,11 @@ const RoomPage = () => {
             <div className="room-message-icon">
               <AlarmIcon color="#CBC2FB" />
             </div>
-            <div className="room-message-text">{room?.message || "..."}</div>
+            <div className="room-message-text">
+              {room?.message || "..."} 
+              <br />
+              {room?.link && <Link to={room.link} target="_blank">{room.link}</Link>} 
+            </div>
           </div>
         </div>
         <div className="player">

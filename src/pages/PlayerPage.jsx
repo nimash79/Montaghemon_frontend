@@ -205,8 +205,21 @@ const PlayerPage = () => {
     );
   };
 
-  const sendRoomMessage = (message) => {
-    send({ type: "send_message", message });
+  const sendRoomMessage = (message, link) => {
+    function isValidUrl(string) {
+      try {
+        const url = new URL(string);
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch (_) {
+        return false;
+      }
+    }
+    if (!isValidUrl(link)) {
+      notif_error("لینک وارد شده معتبر نمی باشد.");
+      return;
+    }
+
+    send({ type: "send_message", message, link });
     setMessageModal(false);
     notif_success("اطلاعیه برای اعضا ارسال شد.");
   };
@@ -266,6 +279,7 @@ const PlayerPage = () => {
         isOpen={messageModal}
         setMessageModal={setMessageModal}
         roomMessage={room?.message}
+        roomLink={room?.link}
         onSubmit={sendRoomMessage}
       />
       <audio
