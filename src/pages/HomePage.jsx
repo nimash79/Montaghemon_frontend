@@ -16,6 +16,7 @@ import FaqIcon from "./../components/icons/FaqIcon";
 import AboutUsIcon from "./../components/icons/AboutUsIcon";
 import CustomButton from "./../components/shared/CustomButton";
 import { useWs } from "../ws/WsProvider";
+import MainGuideModal from "../components/modals/MainGuideModal";
 
 const HomePage = () => {
   const { status, send, subscribe, ws } = useWs();
@@ -23,6 +24,7 @@ const HomePage = () => {
   const clockRef = useRef(null);
   const wakeLockRef = useRef(null);
   const [awake, setAwake] = useState(false);
+  const [guideModal, setGuideModal] = useState(false);
 
   const [offset, setOffset] = useState(0);
   const [info, setInfo] = useState({
@@ -36,14 +38,14 @@ const HomePage = () => {
   const [onlineCount, setOnlineCount] = useState(0);
 
   const player = useMemo(
-  () =>
-    new SyncHlsPlayer({
-      clock: {
-        nowServerMs: () => Date.now() + (clockRef.current?.offsetMs || 0),
-      },
-    }),
-  [],
-);
+    () =>
+      new SyncHlsPlayer({
+        clock: {
+          nowServerMs: () => Date.now() + (clockRef.current?.offsetMs || 0),
+        },
+      }),
+    [],
+  );
 
 
   const requestWakeLock = async () => {
@@ -155,14 +157,15 @@ const HomePage = () => {
   return (
     <>
       <StatusBar quality={audioRef?.current?.paused ? "NONE" : info?.quality} />
+      <MainGuideModal isOpen={guideModal} setIsOpen={setGuideModal} />
       <div className="home-header">
         <Link to={"/rooms"} className="rooms-button">
           وارد هیئت خود شوید
         </Link>
-        <Link to={"/guide"} className="guide">
+        <div className="guide" onClick={() => setGuideModal(true)}>
           <FaqIcon color="#c7d2fe" />
           <span>راهنما</span>
-        </Link>
+        </div>
       </div>
       <div className="home-page">
         <div className="player">
@@ -187,7 +190,7 @@ const HomePage = () => {
                 : "0:00"}
             </div>
           </div>
-          <div className={`third ${player?.playedByUser ? "": "play-button-hint"}`}>
+          <div className={`third ${player?.playedByUser ? "" : "play-button-hint"}`}>
             {player?.playedByUser ? (
               <PauseIcon onClick={onStop} />
             ) : (

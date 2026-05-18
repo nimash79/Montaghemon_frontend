@@ -10,7 +10,6 @@ import OfflinePage from "./pages/OfflinePage";
 import RoomsPage from "./pages/RoomsPage";
 import RoomPage from "./pages/RoomPage";
 import { ToastContainer } from "react-toastify";
-import GuidePage from "./pages/GuidePage";
 import AddTrackPage from "./pages/admin/AddTrackPage";
 import AddSingerPage from "./pages/admin/AddSingerPage";
 import AddRoomPage from "./pages/admin/AddRoomPage";
@@ -29,7 +28,6 @@ export default function App() {
             <Route path="/player/:roomId" Component={PlayerPage} />
             <Route path="/room/:roomId" Component={RoomPage} />
             <Route path="/rooms" Component={RoomsPage} />
-            <Route path="/guide" Component={GuidePage} />
             {/* End Main Pages */}
             {/* Admin Pages */}
             <Route path="/add-track" Component={AddTrackPage} />
