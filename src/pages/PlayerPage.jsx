@@ -17,6 +17,9 @@ import CustomButton from "../components/shared/CustomButton";
 import PlusIcon from "./../components/icons/PlusIcon";
 import CheckIcon from "../components/icons/CheckIcon";
 import LoadingModal from './../components/modals/LoadingModal';
+import CustomSlider from "../components/shared/CustomSlider";
+import VolumeDownIcon from '../components/icons/VolumeDownIcon';
+import VolumeUpIcon from './../components/icons/VolumeUpIcon';
 
 const PlayerPage = () => {
   const [loadingModal, setLoadingModal] = useState(true);
@@ -32,6 +35,7 @@ const PlayerPage = () => {
   const [duration, setDuration] = useState();
   const [currentTime, setCurrentTime] = useState();
   const [paused, setPaused] = useState(true);
+  const [volume, setVolume] = useState(1);
 
   const { roomId } = useParams();
 
@@ -130,6 +134,10 @@ const PlayerPage = () => {
         playRoom(msg);
       } else if (msg.type === "get_message") {
         setRoom(msg.room);
+      } else if (msg.type === "get_volume") {
+        if (audioRef.current) {
+          audioRef.current.volume = msg.volume;
+        }
       }
     });
     return unsub;
@@ -376,14 +384,25 @@ const PlayerPage = () => {
                 <PauseIcon width={50} height={50} onClick={pauseTrack} />
               )}
             </div>
-            <div className="second">
-              <div style={{ fontSize: 20, direction: "ltr" }}>
+            <div className="second" style={{marginTop: 12}}>
+              <div style={{ fontSize: 20, direction: "ltr", width: "4ch" }}>
                 {duration ? formatTime(duration) : "0:00"}
               </div>
               <ProgressLine playedSec={currentTime} durationSec={duration} />
               <div style={{ fontSize: 20, direction: "ltr", width: "4ch" }}>
                 {currentTime ? formatTime(currentTime) : "0:00"}
               </div>
+            </div>
+            <div className="third" style={{marginTop: 12}}>
+              <VolumeUpIcon style={{width: 32.25}} color="#7B61FF" />
+              <CustomSlider
+                value={volume}
+                onChange={(v) => {
+                  setVolume(v);
+                  send({ type: "set_volume", roomId, volume: v });
+                }}
+              />
+                <VolumeDownIcon style={{width: 32.25}} color="#7B61FF" />
             </div>
           </div>
         </>

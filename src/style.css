@@ -437,7 +437,7 @@ p {
 .player-status.show {
   transform: translateY(0);
 }
-.player-status .first {
+.player-status > div {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -450,12 +450,6 @@ p {
 .player-status .first span {
   flex: 1;
   margin-inline-start: 12px;
-}
-.player-status .second {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin-top: 12px;
 }
 /* End Player Page */
 

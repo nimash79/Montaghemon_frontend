@@ -100,6 +100,10 @@ const RoomPage = () => {
       } else if (msg.type === "get_message") {
         notificationRef.current.play();
         setRoom(msg.room);
+      } else if (msg.type === "get_volume") {
+        if (audioRef.current) {
+          audioRef.current.volume = msg.volume;
+        }
       }
     });
     return unsub;
@@ -142,7 +146,6 @@ const RoomPage = () => {
       } else {
         stableCounter.current = 0;
       }
-
     }, 250);
 
     return () => clearInterval(interval);
@@ -212,9 +215,13 @@ const RoomPage = () => {
               <AlarmIcon color="#CBC2FB" />
             </div>
             <div className="room-message-text">
-              {room?.message || "..."} 
+              {room?.message || "..."}
               <br />
-              {room?.link && <Link to={room.link} target="_blank">{room.link}</Link>} 
+              {room?.link && (
+                <Link to={room.link} target="_blank">
+                  {room.link}
+                </Link>
+              )}
             </div>
           </div>
         </div>

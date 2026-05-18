@@ -122,7 +122,7 @@ const OfflinePage = () => {
           )}
         </div>
         <div className="second">
-          <div style={{ fontSize: 20, direction: "ltr" }}>
+          <div style={{ fontSize: 20, direction: "ltr", width: "4ch" }}>
             {duration ? formatTime(duration) : "00:00"}
           </div>
           <ProgressLine playedSec={currentTime} durationSec={duration} />
