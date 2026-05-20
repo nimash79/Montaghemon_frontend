@@ -6,12 +6,6 @@ import { visualizer } from "rollup-plugin-visualizer";
 export default defineConfig({
   plugins: [
     react(),
-    visualizer({
-      open: true,
-      filename: "stats.html",
-      gzipSize: true,
-      brotliSize: true,
-    }),
     // VitePWA({
     //   registerType: "autoUpdate",
     //   manifest: {

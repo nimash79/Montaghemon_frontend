@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const AddRoomPage = () => {
   const [result, setResult] = useState("");
+  const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [password, setPassword] = useState("");

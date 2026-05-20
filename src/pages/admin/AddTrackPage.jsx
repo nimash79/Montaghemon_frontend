@@ -28,7 +28,7 @@ const AddTrackPage = () => {
 
   useEffect(() => {
     (async () => {
-      let res = await getCategories();
+      let res = await getCategories({all: true});
       if (res.data.ok) {
         setAllCategories(
           res.data.categories.map((s) => ({ value: s._id, text: s.name })),

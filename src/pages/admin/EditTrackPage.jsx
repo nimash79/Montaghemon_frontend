@@ -48,7 +48,6 @@ const EditTrackPage = () => {
       }
       res = await getTrack(id);
       if (res.data.ok) {
-        console.log(res.data);
         setName(res.data.track.name);
         setHls(res.data.track.hlsRel.split("/")[2]);
 

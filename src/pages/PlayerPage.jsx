@@ -345,7 +345,7 @@ const PlayerPage = () => {
             </div>
           </div>
           <div className="tracks">
-            <div className="slider-container">
+            {/* <div className="slider-container">
               <Swiper
                 modules={[Navigation]}
                 spaceBetween={15}
@@ -368,7 +368,7 @@ const PlayerPage = () => {
                   </SwiperSlide>
                 ))}
               </Swiper>
-            </div>
+            </div> */}
             {tracks.map((track, index) => (
               <div className="track" key={track._id}>
                 <img src={track.thumbnail} />
