@@ -8,12 +8,10 @@ import { getSingers } from "../../api/singers";
 import { getCategories } from "../../api/categories";
 import axios from "axios";
 import CustomDropdownMultiple from "../../components/shared/CustomDropdownMultiple";
-import AdminModal from "../../components/modals/AdminModal";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const AddTrackPage = () => {
-  const [adminModal, setAdminModal] = useState(true);
   const [name, setName] = useState("");
   const [hls, setHls] = useState("");
   const [allSingers, setAllSingers] = useState([]);
@@ -32,12 +30,16 @@ const AddTrackPage = () => {
     (async () => {
       let res = await getCategories();
       if (res.data.ok) {
-        setAllCategories(res.data.categories.map((s) => ({ value: s._id, text: s.name })));
+        setAllCategories(
+          res.data.categories.map((s) => ({ value: s._id, text: s.name })),
+        );
       }
 
       res = await getSingers();
       if (res.data.ok) {
-        setAllSingers(res.data.singers.map((s) => ({ value: s._id, text: s.name })));
+        setAllSingers(
+          res.data.singers.map((s) => ({ value: s._id, text: s.name })),
+        );
       }
     })();
   }, []);
@@ -53,12 +55,12 @@ const AddTrackPage = () => {
 
       const formData = new FormData();
 
-      categories.forEach(c => {
+      categories.forEach((c) => {
         formData.append("categories[]", c.value);
       });
       formData.append("name", name);
       formData.append("hls", hls);
-      singers.forEach(s => {
+      singers.forEach((s) => {
         formData.append("singers[]", s.value);
       });
 
@@ -68,20 +70,19 @@ const AddTrackPage = () => {
       formData.append("disabled", disabled);
       formData.append("thumbnail", thumbnail);
 
-
       const res = await axios.post(`${API_URL}/tracks/create`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Authorization": "Bearer YA_HOSSEIN_ABA_ABDELLAH",
+          Authorization: "Bearer YA_HOSSEIN_ABA_ABDELLAH",
         },
       });
-
 
       if (res.data.ok) {
         setMessage("نماهنگ با موفقیت اضافه شد ✅");
         // ریست فرم
         setName("");
         setHls("");
+        setCategories([]);
         setSingers([]);
         setDurationMs("");
         setMtimeMs("");
@@ -101,80 +102,87 @@ const AddTrackPage = () => {
 
   return (
     <div className="form-page">
-      <AdminModal isOpen={adminModal} setIsOpen={setAdminModal} />
-      {!adminModal && (
-        <>
-          <div className="form-title">اضافه کردن نماهنگ</div>
+      <div className="form-title">اضافه کردن نماهنگ</div>
 
-          <CustomInput
-            placeholder="نام نماهنگ"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
+      <CustomInput
+        placeholder="نام نماهنگ"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
-          <CustomInput
-            placeholder="نام hls"
-            value={hls}
-            onChange={e => setHls(e.target.value)}
-          />
+      <CustomInput
+        placeholder="نام hls"
+        value={hls}
+        onChange={(e) => setHls(e.target.value)}
+      />
 
-          <CustomDropdownMultiple
-            values={categories}
-            setValues={setCategories}
-            placeholder="دسته بندی"
-            options={allCategories}
-          />
+      <CustomDropdownMultiple
+        values={categories}
+        setValues={setCategories}
+        placeholder="دسته بندی"
+        options={allCategories}
+      />
 
-          <CustomDropdownMultiple
-            values={singers}
-            setValues={setSingers}
-            placeholder="مداح یا خواننده"
-            options={allSingers}
-          />
+      <CustomDropdownMultiple
+        values={singers}
+        setValues={setSingers}
+        placeholder="مداح یا خواننده"
+        options={allSingers}
+      />
 
-          <CustomInput
-            type="number"
-            value={durationMs}
-            onChange={e => setDurationMs(e.target.value)}
-            placeholder="durationMs"
-          />
+      <CustomInput
+        type="number"
+        value={durationMs}
+        onChange={(e) => setDurationMs(e.target.value)}
+        placeholder="durationMs"
+      />
 
-          <CustomInput
-            type="number"
-            value={mtimeMs}
-            onChange={e => setMtimeMs(e.target.value)}
-            placeholder="mtimeMs"
-          />
+      <CustomInput
+        type="number"
+        value={mtimeMs}
+        onChange={(e) => setMtimeMs(e.target.value)}
+        placeholder="mtimeMs"
+      />
 
-          <CustomInput
-            type="number"
-            value={size}
-            onChange={e => setSize(e.target.value)}
-            placeholder="size"
-          />
+      <CustomInput
+        type="number"
+        value={size}
+        onChange={(e) => setSize(e.target.value)}
+        placeholder="size"
+      />
 
-          <div style={{ margin: "10px 0" }}>
-            <label>کاور (thumbnail): </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setThumbnail(e.target.files[0])}
-            />
-          </div>
+      <div style={{ margin: "10px 0" }}>
+        <label>کاور (thumbnail): </label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setThumbnail(e.target.files[0])}
+        />
+      </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span>غیرفعال؟</span>
-            <CustomCheckbox checked={disabled} onChange={() => setDisabled((d) => !d)} />
-          </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <span>غیرفعال؟</span>
+        <CustomCheckbox
+          checked={disabled}
+          onChange={() => setDisabled((d) => !d)}
+        />
+      </div>
 
-          <CustomButton text={loading ? "در حال ارسال..." : "ثبت"} onClick={submit} disabled={loading} />
+      <CustomButton
+        text={loading ? "در حال ارسال..." : "ثبت"}
+        onClick={submit}
+        disabled={loading}
+      />
 
-          {message && (
-            <p style={{ marginTop: "12px", color: message.includes("✅") ? "green" : "red" }}>
-              {message}
-            </p>
-          )}
-        </>
+      {message && (
+        <p
+          style={{
+            marginTop: "12px",
+            color: message.includes("✅") ? "green" : "red",
+          }}
+        >
+          {message}
+        </p>
       )}
     </div>
   );

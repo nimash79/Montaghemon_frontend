@@ -14,3 +14,8 @@ export const addFavorite = async ({roomId, trackId}) => {
 export const removeFavorite = async ({roomId, trackId}) => {
     return axios.post(`${API_URL}/tracks/remove-favorite`, {roomId, trackId});
 }
+
+export const getTrack = async (id) => {
+    const tracks = await axios.get(`${API_URL}/tracks/get-track/${id}`);
+    return tracks;
+}

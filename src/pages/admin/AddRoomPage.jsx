@@ -3,13 +3,10 @@ import { Link } from "react-router";
 import CustomInput from "../../components/shared/CustomInput";
 import CustomButton from "../../components/shared/CustomButton";
 import axios from "axios";
-import AdminModal from "../../components/modals/AdminModal";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const AddRoomPage = () => {
-  const [adminModal, setAdminModal] = useState(true);
-  const [message, setMessage] = useState("");
   const [result, setResult] = useState("");
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
@@ -33,18 +30,16 @@ const AddRoomPage = () => {
       formData.append("password", password);
       formData.append("logo", logo);
 
-
       const res = await axios.post(`${API_URL}/rooms/create`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Authorization": "Bearer YA_HOSSEIN_ABA_ABDELLAH",
+          Authorization: "Bearer YA_HOSSEIN_ABA_ABDELLAH",
         },
       });
 
-
       if (res.data.ok) {
         setMessage("کاروان با موفقیت اضافه شد ✅");
-        setResult(`id: ${res.data.roomId}       password: ${password}`)
+        setResult(`id: ${res.data.roomId}       password: ${password}`);
         // ریست فرم
         setName("");
         setCity("");
@@ -63,54 +58,52 @@ const AddRoomPage = () => {
 
   return (
     <div className="form-page">
-      <AdminModal isOpen={adminModal} setIsOpen={setAdminModal} />
-      {!adminModal && (
-        <>
-          <div className="form-title">اضافه کردن کاروان</div>
+      <div className="form-title">اضافه کردن کاروان</div>
 
-          <CustomInput
-            placeholder="نام کاروان"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
+      <CustomInput
+        placeholder="نام کاروان"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
-          <CustomInput
-            placeholder="استان، شهر"
-            value={city}
-            onChange={e => setCity(e.target.value)}
-          />
+      <CustomInput
+        placeholder="استان، شهر"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+      />
 
-          <CustomInput
-            placeholder="رمز عبور"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
+      <CustomInput
+        placeholder="رمز عبور"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
+      <div style={{ margin: "10px 0" }}>
+        <label>عکس کاروان: </label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setLogo(e.target.files[0])}
+        />
+      </div>
 
+      <CustomButton
+        text={loading ? "در حال ارسال..." : "ثبت"}
+        onClick={submit}
+        disabled={loading}
+      />
 
-          <div style={{ margin: "10px 0" }}>
-            <label>عکس کاروان: </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setLogo(e.target.files[0])}
-            />
-          </div>
-
-          <CustomButton text={loading ? "در حال ارسال..." : "ثبت"} onClick={submit} disabled={loading} />
-
-          {message && (
-            <p style={{ marginTop: "12px", color: message.includes("✅") ? "green" : "red" }}>
-              {message}
-            </p>
-          )}
-          {result && (
-            <p style={{ marginTop: "12px", color: "white" }}>
-              {result}
-            </p>
-          )}
-        </>
+      {message && (
+        <p
+          style={{
+            marginTop: "12px",
+            color: message.includes("✅") ? "green" : "red",
+          }}
+        >
+          {message}
+        </p>
       )}
+      {result && <p style={{ marginTop: "12px", color: "white" }}>{result}</p>}
     </div>
   );
 };

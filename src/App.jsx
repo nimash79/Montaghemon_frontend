@@ -13,6 +13,9 @@ import { ToastContainer } from "react-toastify";
 import AddTrackPage from "./pages/admin/AddTrackPage";
 import AddSingerPage from "./pages/admin/AddSingerPage";
 import AddRoomPage from "./pages/admin/AddRoomPage";
+import TracksPage from "./pages/admin/TracksPage";
+import EditTrackPage from "./pages/admin/EditTrackPage";
+import AdminLayout from "./layouts/AdminLayout";
 
 // installRemoteLogger({ endpoint: "https://montaghemon.site/api/client-log" });
 
@@ -30,9 +33,13 @@ export default function App() {
             <Route path="/rooms" Component={RoomsPage} />
             {/* End Main Pages */}
             {/* Admin Pages */}
-            <Route path="/add-track" Component={AddTrackPage} />
-            <Route path="/add-singer" Component={AddSingerPage} />
-            <Route path="/add-room" Component={AddRoomPage} />
+            <Route element={<AdminLayout />}>
+              <Route path="/add-track" Component={AddTrackPage} />
+              <Route path="/add-singer" Component={AddSingerPage} />
+              <Route path="/add-room" Component={AddRoomPage} />
+              <Route path="/tracks" Component={TracksPage} />
+              <Route path="/edit-track/:id" Component={EditTrackPage} />
+            </Route>
             {/* End Admin Pages */}
           </Route>
         </Routes>

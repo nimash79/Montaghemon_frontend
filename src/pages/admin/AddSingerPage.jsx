@@ -3,13 +3,11 @@ import { Link } from "react-router";
 import CustomInput from "../../components/shared/CustomInput";
 import CustomButton from "../../components/shared/CustomButton";
 import axios from "axios";
-import AdminModal from "../../components/modals/AdminModal";
 import CustomTextArea from "../../components/shared/CustomTextArea";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const AddSingerPage = () => {
-  const [adminModal, setAdminModal] = useState(true);
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -59,9 +57,6 @@ const AddSingerPage = () => {
 
   return (
     <div className="form-page">
-      <AdminModal isOpen={adminModal} setIsOpen={setAdminModal} />
-      {!adminModal && (
-        <>
           <div className="form-title">اضافه کردن خواننده</div>
 
           <CustomInput
@@ -88,8 +83,6 @@ const AddSingerPage = () => {
               {message}
             </p>
           )}
-        </>
-      )}
     </div>
   );
 };

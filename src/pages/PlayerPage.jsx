@@ -57,7 +57,7 @@ const PlayerPage = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await getCategories();
+      const res = await getCategories({all: false, disabled: false});
       console.log(res.data);
       setCategories(res.data.categories);
     })();
@@ -345,19 +345,19 @@ const PlayerPage = () => {
             </div>
           </div>
           <div className="tracks">
-            {/* <div className="slider-container">
+            <div className="slider-container">
               <Swiper
                 modules={[Navigation]}
-                spaceBetween={0}
-                slidesPerView={1}
+                spaceBetween={15}
+                slidesPerView={"auto"}
+                centeredSlides={true}
+                loop={true}
               >
                 {categories.map((cat, index) => (
-                  <SwiperSlide key={index}>
-                    <div style={{ textAlign: "center", padding: "10px" }}>
+                  <SwiperSlide key={index} style={{width: 255}}>
+                    <div style={{textAlign: "center", padding: "10px" }}>
                       <img
-                        src={
-                          "https://cdnimg.kashoob.com/wVpSf8IjBc5hoccbbh_1EeEsGbZerLXoKRzRbuNL7Sw/fill/255/155/sm/1/bG9jYWw6Ly8vc3RvcmFnZS9pbWFnZS8yMDI2MDQvMTc3NTc0MTQ2NjkxMzcwNTIzNTM4OTcuanBn.webp"
-                        }
+                        src={cat.image}
                         alt={cat.name}
                         style={{ width: 255, height: 155, borderRadius: 15 }}
                       />
@@ -368,7 +368,7 @@ const PlayerPage = () => {
                   </SwiperSlide>
                 ))}
               </Swiper>
-            </div> */}
+            </div>
             {tracks.map((track, index) => (
               <div className="track" key={track._id}>
                 <img src={track.thumbnail} />
