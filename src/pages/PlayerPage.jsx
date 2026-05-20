@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 
 import { addFavorite, getTracks, removeFavorite } from "../api/tracks";
 import UserIcon from "../components/icons/UserIcon";
@@ -8,7 +11,6 @@ import ProgressLine from "../components/media/ProgressLine";
 import PauseIcon from "../components/icons/MediaIcons/PauseIcon";
 import { useWs } from "../ws/WsProvider";
 import { ClockSync } from "../sync/clock";
-import { useParams } from "react-router";
 import PasswordModal from "../components/modals/PasswordModal";
 import MusicIcon from "../components/icons/MusicIcon";
 import MessageModal from "../components/modals/MessageModal";
@@ -16,15 +18,20 @@ import { notif_error, notif_success } from "../lib/toast";
 import CustomButton from "../components/shared/CustomButton";
 import PlusIcon from "./../components/icons/PlusIcon";
 import CheckIcon from "../components/icons/CheckIcon";
-import LoadingModal from './../components/modals/LoadingModal';
+import LoadingModal from "./../components/modals/LoadingModal";
 import CustomSlider from "../components/shared/CustomSlider";
-import VolumeDownIcon from '../components/icons/VolumeDownIcon';
-import VolumeUpIcon from './../components/icons/VolumeUpIcon';
+import VolumeDownIcon from "../components/icons/VolumeDownIcon";
+import VolumeUpIcon from "./../components/icons/VolumeUpIcon";
+import { getCategories } from "../api/categories";
+
+import "swiper/css";
+import "swiper/css/navigation";
 
 const PlayerPage = () => {
   const [loadingModal, setLoadingModal] = useState(true);
   const [passwordModal, setPasswordModal] = useState(true);
   const [messageModal, setMessageModal] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [allTracks, setAllTracks] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [total, setTotal] = useState(0);
@@ -49,6 +56,11 @@ const PlayerPage = () => {
   const [roomMembers, setRoomMembers] = useState(0);
 
   useEffect(() => {
+    (async () => {
+      const res = await getCategories();
+      console.log(res.data);
+      setCategories(res.data.categories);
+    })();
     return () => {
       send({ type: "leave_room", roomId });
     };
@@ -333,6 +345,30 @@ const PlayerPage = () => {
             </div>
           </div>
           <div className="tracks">
+            {/* <div className="slider-container">
+              <Swiper
+                modules={[Navigation]}
+                spaceBetween={0}
+                slidesPerView={1}
+              >
+                {categories.map((cat, index) => (
+                  <SwiperSlide key={index}>
+                    <div style={{ textAlign: "center", padding: "10px" }}>
+                      <img
+                        src={
+                          "https://cdnimg.kashoob.com/wVpSf8IjBc5hoccbbh_1EeEsGbZerLXoKRzRbuNL7Sw/fill/255/155/sm/1/bG9jYWw6Ly8vc3RvcmFnZS9pbWFnZS8yMDI2MDQvMTc3NTc0MTQ2NjkxMzcwNTIzNTM4OTcuanBn.webp"
+                        }
+                        alt={cat.name}
+                        style={{ width: 255, height: 155, borderRadius: 15 }}
+                      />
+                      <h3 style={{ marginTop: "10px", fontSize: "16px" }}>
+                        {cat.name}
+                      </h3>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div> */}
             {tracks.map((track, index) => (
               <div className="track" key={track._id}>
                 <img src={track.thumbnail} />
@@ -384,7 +420,7 @@ const PlayerPage = () => {
                 <PauseIcon width={50} height={50} onClick={pauseTrack} />
               )}
             </div>
-            <div className="second" style={{marginTop: 12}}>
+            <div className="second" style={{ marginTop: 12 }}>
               <div style={{ fontSize: 20, direction: "ltr", width: "4ch" }}>
                 {duration ? formatTime(duration) : "0:00"}
               </div>
@@ -393,8 +429,8 @@ const PlayerPage = () => {
                 {currentTime ? formatTime(currentTime) : "0:00"}
               </div>
             </div>
-            <div className="third" style={{marginTop: 12}}>
-              <VolumeUpIcon style={{width: 32.25}} color="#7B61FF" />
+            <div className="third" style={{ marginTop: 12 }}>
+              <VolumeUpIcon style={{ width: 32.25 }} color="#7B61FF" />
               <CustomSlider
                 value={volume}
                 onChange={(v) => {
@@ -402,7 +438,7 @@ const PlayerPage = () => {
                   send({ type: "set_volume", roomId, volume: v });
                 }}
               />
-                <VolumeDownIcon style={{width: 32.25}} color="#7B61FF" />
+              <VolumeDownIcon style={{ width: 32.25 }} color="#7B61FF" />
             </div>
           </div>
         </>

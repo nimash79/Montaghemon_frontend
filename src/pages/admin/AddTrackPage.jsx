@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import CustomCheckbox from "../../components/shared/CustomCheckbox";
 import CustomButton from "../../components/shared/CustomButton";
 import { getSingers } from "../../api/singers";
+import { getCategories } from "../../api/categories";
 import axios from "axios";
 import CustomDropdownMultiple from "../../components/shared/CustomDropdownMultiple";
 import AdminModal from "../../components/modals/AdminModal";
@@ -17,7 +18,8 @@ const AddTrackPage = () => {
   const [hls, setHls] = useState("");
   const [allSingers, setAllSingers] = useState([]);
   const [singers, setSingers] = useState([]);
-  const [category, setCategory] = useState();
+  const [allCategories, setAllCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [durationMs, setDurationMs] = useState("");
   const [mtimeMs, setMtimeMs] = useState("");
   const [size, setSize] = useState("");
@@ -28,7 +30,12 @@ const AddTrackPage = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await getSingers();
+      let res = await getCategories();
+      if (res.data.ok) {
+        setAllCategories(res.data.categories.map((s) => ({ value: s._id, text: s.name })));
+      }
+
+      res = await getSingers();
       if (res.data.ok) {
         setAllSingers(res.data.singers.map((s) => ({ value: s._id, text: s.name })));
       }
@@ -46,7 +53,9 @@ const AddTrackPage = () => {
 
       const formData = new FormData();
 
-      formData.append("category", category);
+      categories.forEach(c => {
+        formData.append("categories[]", c.value);
+      });
       formData.append("name", name);
       formData.append("hls", hls);
       singers.forEach(s => {
@@ -107,6 +116,13 @@ const AddTrackPage = () => {
             placeholder="نام hls"
             value={hls}
             onChange={e => setHls(e.target.value)}
+          />
+
+          <CustomDropdownMultiple
+            values={categories}
+            setValues={setCategories}
+            placeholder="دسته بندی"
+            options={allCategories}
           />
 
           <CustomDropdownMultiple
