@@ -271,6 +271,7 @@ p {
 }
 .main-layout .header .icon {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 .main-layout .header-title {
   font-size: 20px;
@@ -279,6 +280,9 @@ p {
   border-bottom: 2px solid var(--neutral_40);
   color: var(--neutral_40);
   text-align: center;
+}
+.main-layout .header .guide {
+  -webkit-tap-highlight-color: transparent;
 }
 /* End Main Layout */
 
@@ -394,6 +398,7 @@ p {
 .category {
   text-align: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 .category img {
   width: 255px;

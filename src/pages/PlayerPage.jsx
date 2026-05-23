@@ -353,7 +353,6 @@ const PlayerPage = () => {
                 <CustomInput
                   placeholder="جستجو ..."
                   onKeyUp={(event) => setSearch(event.target.value)}
-                  onClick={endTrack}
                 />
               </div>
               <CustomButton
