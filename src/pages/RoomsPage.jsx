@@ -19,7 +19,6 @@ const RoomsPage = () => {
         const sortedRooms = [...res.data.rooms].sort(
           (a, b) => b.members - a.members,
         );
-        console.log(sortedRooms);
         setTotal(sortedRooms.length);
         setAllRooms(sortedRooms);
         setRooms(sortedRooms);

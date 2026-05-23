@@ -32,6 +32,8 @@ const PlayerPage = () => {
   const [passwordModal, setPasswordModal] = useState(true);
   const [messageModal, setMessageModal] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState();
+  const [search, setSearch] = useState("");
   const [allTracks, setAllTracks] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [total, setTotal] = useState(0);
@@ -57,8 +59,7 @@ const PlayerPage = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await getCategories({all: false, disabled: false});
-      console.log(res.data);
+      const res = await getCategories({ all: false, disabled: false });
       setCategories(res.data.categories);
     })();
     return () => {
@@ -211,9 +212,8 @@ const PlayerPage = () => {
   const endTrack = () => {
     pauseTrack();
     setTimeout(() => {
-      if (allTracks[activeIndex + 1])
-        startTrack(allTracks[activeIndex + 1], activeIndex + 1);
-      else startTrack(allTracks[0], 0);
+      audioRef.current.src = "";
+      startTrack(activeTrack, activeIndex);
     }, 500);
   };
 
@@ -287,6 +287,24 @@ const PlayerPage = () => {
     }
   };
 
+  useEffect(() => {
+    let filtered = allTracks;
+
+    if (category) {
+      filtered = filtered.filter((t) => t.categories?.includes(category));
+    } else {
+      filtered = filtered.filter((t) => t.isFavorite);
+    }
+
+    if (search) {
+      filtered = filtered.filter((t) =>
+        t.name?.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
+    setTracks(filtered);
+  }, [category, search, allTracks]);
+
   return (
     <div className="player-page">
       <PasswordModal
@@ -334,7 +352,8 @@ const PlayerPage = () => {
               <div className="search" style={{ flex: 1, marginInlineEnd: 8 }}>
                 <CustomInput
                   placeholder="جستجو ..."
-                  onKeyUp={(event) => searchTracks(event.target.value)}
+                  onKeyUp={(event) => setSearch(event.target.value)}
+                  onClick={endTrack}
                 />
               </div>
               <CustomButton
@@ -345,7 +364,7 @@ const PlayerPage = () => {
             </div>
           </div>
           <div className="tracks">
-            {/* <div className="slider-container">
+            <div className="slider-container">
               <Swiper
                 modules={[Navigation]}
                 spaceBetween={15}
@@ -353,22 +372,42 @@ const PlayerPage = () => {
                 centeredSlides={true}
                 loop={true}
               >
-                {categories.map((cat, index) => (
-                  <SwiperSlide key={index} style={{width: 255}}>
-                    <div style={{textAlign: "center", padding: "10px" }}>
-                      <img
-                        src={cat.image}
-                        alt={cat.name}
-                        style={{ width: 255, height: 155, borderRadius: 15 }}
-                      />
-                      <h3 style={{ marginTop: "10px", fontSize: "16px" }}>
-                        {cat.name}
-                      </h3>
-                    </div>
-                  </SwiperSlide>
-                ))}
+                <SwiperSlide style={{ width: 255 }}>
+                  <div className="category" onClick={() => setCategory(null)}>
+                    <img
+                      src={"/favorites.png"}
+                      alt={"علاقه مندی ها"}
+                      className={!category ? "active" : ""}
+                    />
+                    <h3 className={!category ? "active" : ""}>علاقه مندی ها</h3>
+                  </div>
+                </SwiperSlide>
+                {[...categories]
+                  .sort((a, b) => {
+                    if (a.name === "مقاومت و جهاد اسلامی") return -1;
+                    if (b.name === "مقاومت و جهاد اسلامی") return 1;
+                    return 0;
+                  })
+                  .map((cat) => (
+                    <SwiperSlide key={cat._id} style={{ width: 255 }}>
+                      <div
+                        className="category"
+                        onClick={() => setCategory(cat._id)}
+                      >
+                        <img
+                          src={cat.image}
+                          alt={cat.name}
+                          className={cat._id === category ? "active" : ""}
+                        />
+                        <h3 className={cat._id === category ? "active" : ""}>
+                          {cat.name}
+                        </h3>
+                      </div>
+                    </SwiperSlide>
+                  ))}
               </Swiper>
-            </div> */}
+            </div>
+            <div className="separator"></div>
             {tracks.map((track, index) => (
               <div className="track" key={track._id}>
                 <img src={track.thumbnail} />

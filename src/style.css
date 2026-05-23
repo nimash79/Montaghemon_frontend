@@ -391,6 +391,30 @@ p {
   flex: 1;
   overflow-y: auto;
 }
+.category {
+  text-align: center;
+  cursor: pointer;
+}
+.category img {
+  width: 255px;
+  height: 155px;
+  border-radius: 16px;
+}
+.category img.active {
+  border: 2px solid var(--primary)
+}
+.category h3 {
+  margin-top: 8px;
+  font-size: 16px;
+}
+.category h3.active {
+  color: var(--primary);
+}
+.tracks .separator {
+  margin: 16px 8px;
+  border: 1px solid var(--primary);
+  height: 1,
+}
 .track {
   background-color: var(--bg1);
   border-radius: 12px;
