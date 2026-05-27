@@ -63,6 +63,7 @@ const PlayerPage = () => {
     (async () => {
       const res = await getCategories({ all: false, disabled: false });
       setCategories(res.data.categories);
+      setActiveCategory(localStorage.getItem("activeCategory"));
     })();
     return () => {
       send({ type: "leave_room", roomId });
@@ -202,6 +203,7 @@ const PlayerPage = () => {
   const startTrack = (track, cat) => {
     setActiveTrack(track);
     setActiveCategory(cat);
+    localStorage.setItem("activeCategory", cat);
     if (audioRef.current.src !== track.hlsUrl)
       send({ type: "start_track", roomId, track });
     else send({ type: "resume_track", roomId });
