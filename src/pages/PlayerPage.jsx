@@ -26,6 +26,7 @@ import { getCategories } from "../api/categories";
 
 import "swiper/css";
 import "swiper/css/navigation";
+import RepeatIcon from "../components/icons/MediaIcons/RepeatIcon";
 
 const PlayerPage = () => {
   const [loadingModal, setLoadingModal] = useState(true);
@@ -33,13 +34,14 @@ const PlayerPage = () => {
   const [messageModal, setMessageModal] = useState(false);
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState();
+  const [activeCategory, setActiveCategory] = useState();
   const [search, setSearch] = useState("");
   const [allTracks, setAllTracks] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [total, setTotal] = useState(0);
   const [activeTrack, setActiveTrack] = useState();
-  const [activeIndex, setActiveIndex] = useState();
   const [room, setRoom] = useState();
+  const [repeat, setRepeat] = useState(false);
 
   const [duration, setDuration] = useState();
   const [currentTime, setCurrentTime] = useState();
@@ -197,9 +199,9 @@ const PlayerPage = () => {
     }
   };
 
-  const startTrack = (track, index) => {
+  const startTrack = (track, cat) => {
     setActiveTrack(track);
-    setActiveIndex(index);
+    setActiveCategory(cat);
     if (audioRef.current.src !== track.hlsUrl)
       send({ type: "start_track", roomId, track });
     else send({ type: "resume_track", roomId });
@@ -210,10 +212,24 @@ const PlayerPage = () => {
   };
 
   const endTrack = () => {
+    let nextTrack;
+    let playlist;
+    if (repeat) nextTrack = activeTrack;
+    else {
+      if (!activeCategory) playlist = allTracks.filter((t) => t.isFavorite);
+      else
+        playlist = allTracks.filter((t) =>
+          t.categories.includes(activeCategory),
+        );
+      const activeIndex = playlist.findIndex((t) => t._id === activeTrack._id);
+      if (playlist[activeIndex + 1]) nextTrack = playlist[activeIndex + 1];
+      else nextTrack = playlist[0];
+    }
+    setActiveTrack(nextTrack);
     pauseTrack();
     setTimeout(() => {
       audioRef.current.src = "";
-      startTrack(activeTrack, activeIndex);
+      startTrack(nextTrack, activeCategory);
     }, 500);
   };
 
@@ -353,6 +369,7 @@ const PlayerPage = () => {
                 <CustomInput
                   placeholder="جستجو ..."
                   onKeyUp={(event) => setSearch(event.target.value)}
+                  onClick={endTrack}
                 />
               </div>
               <CustomButton
@@ -433,7 +450,7 @@ const PlayerPage = () => {
                     onClick={() => {
                       pauseTrack();
                       setTimeout(() => {
-                        startTrack(track, index);
+                        startTrack(track, category);
                       }, 250);
                     }}
                   />
@@ -448,11 +465,16 @@ const PlayerPage = () => {
                 <div>{activeTrack?.name}</div>
                 <div className="track-singer">{activeTrack?.singer}</div>
               </div>
+              <RepeatIcon
+                style={{ marginInlineEnd: 8, cursor: "pointer" }}
+                onClick={() => setRepeat((r) => !r)}
+                color={repeat ? "#7B61FF" : "#ADADAD"}
+              />
               {paused ? (
                 <PlayIcon
                   width={50}
                   height={50}
-                  onClick={() => startTrack(activeTrack, activeIndex)}
+                  onClick={() => startTrack(activeTrack, activeCategory)}
                 />
               ) : (
                 <PauseIcon width={50} height={50} onClick={pauseTrack} />
