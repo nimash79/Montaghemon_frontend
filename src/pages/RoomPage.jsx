@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { Device } from "mediasoup-client";
 
 import UserIcon from "../components/icons/UserIcon";
 import PlayIcon from "../components/icons/MediaIcons/PlayIcon";
@@ -11,6 +12,7 @@ import { Link, useParams } from "react-router";
 import ServerPlayStatus from "../components/shared/ServerPlayStatus";
 import MusicIcon from "./../components/icons/MusicIcon";
 import AlarmIcon from "../components/icons/AlarmIcon";
+import { notif_error } from "../lib/toast";
 
 const RoomPage = () => {
   const [room, setRoom] = useState();
@@ -20,6 +22,10 @@ const RoomPage = () => {
   const [playedByUser, setPlayedByUser] = useState(false);
   const [playStatus, setPlayStatus] = useState();
   const [quality, setQuality] = useState("good");
+
+  useEffect(() => {
+    console.log(playedByUser);
+  }, [playedByUser])
 
   const { roomId } = useParams();
 
@@ -34,6 +40,14 @@ const RoomPage = () => {
   const [awake, setAwake] = useState(false);
   const [offset, setOffset] = useState(0);
   const [roomMembers, setRoomMembers] = useState(0);
+
+  // --- MIC (mediasoup) ---
+  const micAudioRef = useRef();
+  const micDeviceRef = useRef(null);
+  const micRecvTransportRef = useRef(null);
+  const micConsumerRef = useRef(null);
+
+  const micLiveRef = useRef(false);
 
   const requestWakeLock = async () => {
     try {
@@ -73,6 +87,7 @@ const RoomPage = () => {
     clock.start(1000);
 
     send({ type: "join_room", roomId });
+    send({ type: "ms_get_router_rtp_capabilities", roomId });
 
     return () => {
       clockRef.current?.stop();
@@ -104,6 +119,106 @@ const RoomPage = () => {
         if (audioRef.current) {
           audioRef.current.volume = msg.volume;
         }
+      } else if (msg.type === "ms_router_rtp_capabilities") {
+        (async () => {
+          try {
+            const device = new Device();
+            await device.load({ routerRtpCapabilities: msg.rtpCapabilities });
+            micDeviceRef.current = device;
+
+            // آیا در لحظه ورود میکروفون فعال است؟
+            micLiveRef.current = Boolean(msg.micActive);
+
+            send({ type: "ms_create_recv_transport", roomId });
+          } catch (e) {
+            console.error(e);
+          }
+        })();
+      } else if (msg.type === "ms_recv_transport_created") {
+        (async () => {
+          try {
+            if (!micDeviceRef.current) return;
+
+            const transport = micDeviceRef.current.createRecvTransport(
+              msg.params,
+            );
+            micRecvTransportRef.current = transport;
+
+            transport.on("connect", ({ dtlsParameters }, callback, errback) => {
+              send({
+                type: "ms_connect_transport",
+                roomId,
+                direction: "recv",
+                dtlsParameters,
+              });
+              callback();
+            });
+
+            // اگر میکروفون روشن است، consume کن
+            if (micLiveRef.current) {
+              send({
+                type: "ms_consume_mic",
+                roomId,
+                rtpCapabilities: micDeviceRef.current.rtpCapabilities,
+              });
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        })();
+      } else if (msg.type === "mic_started") {
+        micLiveRef.current = true;
+
+        if (micRecvTransportRef.current && micDeviceRef.current) {
+          send({
+            type: "ms_consume_mic",
+            roomId,
+            rtpCapabilities: micDeviceRef.current.rtpCapabilities,
+          });
+        }
+      } else if (msg.type === "mic_stopped") {
+        micLiveRef.current = false;
+
+        try {
+          micConsumerRef.current?.close();
+        } catch {}
+        micConsumerRef.current = null;
+
+        if (micAudioRef.current) {
+          micAudioRef.current.srcObject = null;
+        }
+      } else if (msg.type === "ms_mic_consumed") {
+        (async () => {
+          try {
+            const consumer = await micRecvTransportRef.current.consume({
+              id: msg.params.id,
+              producerId: msg.params.producerId,
+              kind: msg.params.kind,
+              rtpParameters: msg.params.rtpParameters,
+            });
+
+            micConsumerRef.current = consumer;
+
+            const stream = new MediaStream([consumer.track]);
+            micAudioRef.current.srcObject = stream;
+
+            try {
+              setPlayedByUser((p) => {
+                if (p) micAudioRef.current.play();
+                else micAudioRef.current.pause();
+                return p;
+              });
+            } catch {}
+
+            send({
+              type: "ms_resume_consumer",
+              roomId,
+              consumerId: consumer.id,
+            });
+          } catch (e) {
+            console.error(e);
+          }
+        })();
       }
     });
     return unsub;
@@ -197,6 +312,7 @@ const RoomPage = () => {
         }
       />
       <audio ref={notificationRef} src="/notification.mp3" />
+      <audio ref={micAudioRef} style={{ display: "none" }} />
       <div className="room-page">
         <div className="controller">
           <div>
@@ -248,6 +364,9 @@ const RoomPage = () => {
                 onClick={() => {
                   setPlayedByUser(true);
                   if (room?.isPlaying) audioRef.current.play();
+                  try {
+                    micAudioRef.current?.play();
+                  } catch {}
                 }}
               />
             ) : (
@@ -255,6 +374,9 @@ const RoomPage = () => {
                 onClick={() => {
                   setPlayedByUser(false);
                   audioRef.current.pause();
+                  try {
+                    micAudioRef.current?.pause();
+                  } catch {}
                 }}
               />
             )}

@@ -15,3 +15,5 @@ const MicrophoneIcon = ({ color = "#ADADAD", ...props }) => (
     />
   </svg>
 );
+
+export default MicrophoneIcon;

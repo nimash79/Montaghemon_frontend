@@ -23,10 +23,13 @@ import CustomSlider from "../components/shared/CustomSlider";
 import VolumeDownIcon from "../components/icons/VolumeDownIcon";
 import VolumeUpIcon from "./../components/icons/VolumeUpIcon";
 import { getCategories } from "../api/categories";
+import { Device } from "mediasoup-client";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import RepeatIcon from "../components/icons/MediaIcons/RepeatIcon";
+import MicrophoneMuteIcon from "../components/icons/MicrohphoneMuteIcon";
+import MicrophoneIcon from "./../components/icons/MicrophoneIcon";
 
 const PlayerPage = () => {
   const [loadingModal, setLoadingModal] = useState(true);
@@ -58,6 +61,15 @@ const PlayerPage = () => {
   const [awake, setAwake] = useState(false);
   const [offset, setOffset] = useState(0);
   const [roomMembers, setRoomMembers] = useState(0);
+
+  // --- MIC (mediasoup) ---
+  const micDeviceRef = useRef(null);
+  const micSendTransportRef = useRef(null);
+  const micProducerRef = useRef(null);
+  const micStreamRef = useRef(null);
+
+  const [micOn, setMicOn] = useState(false);
+  const [micBusy, setMicBusy] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -154,6 +166,82 @@ const PlayerPage = () => {
         if (audioRef.current) {
           audioRef.current.volume = msg.volume;
         }
+      } else if (msg.type === "ms_router_rtp_capabilities") {
+        // فقط وقتی واقعاً قصد startMic داریم
+        if (!micStreamRef.current) return;
+
+        (async () => {
+          try {
+            const device = new Device();
+            await device.load({ routerRtpCapabilities: msg.rtpCapabilities });
+            micDeviceRef.current = device;
+
+            send({ type: "ms_create_send_transport", roomId });
+          } catch (e) {
+            console.error(e);
+            notif_error("خطا در آماده‌سازی میکروفون (Device).");
+          }
+        })();
+      } else if (msg.type === "ms_send_transport_created") {
+        (async () => {
+          try {
+            if (!micDeviceRef.current) return;
+
+            const transport = micDeviceRef.current.createSendTransport(
+              msg.params,
+            );
+            micSendTransportRef.current = transport;
+
+            transport.on("connect", ({ dtlsParameters }, callback, errback) => {
+              send({
+                type: "ms_connect_transport",
+                roomId,
+                direction: "send",
+                dtlsParameters,
+              });
+              callback();
+            });
+
+            transport.on(
+              "produce",
+              ({ kind, rtpParameters }, callback, errback) => {
+                send({ type: "ms_produce_mic", roomId, kind, rtpParameters });
+
+                // انتظار برای ack
+                const unsub2 = subscribe((m2) => {
+                  if (m2.type === "ms_mic_produced") {
+                    callback({ id: m2.producerId });
+                    unsub2();
+                  } else if (
+                    m2.type === "ms_error" &&
+                    m2.action === "produce_mic"
+                  ) {
+                    errback(new Error(m2.error));
+                    unsub2();
+                  }
+                });
+              },
+            );
+
+            const track = micStreamRef.current?.getAudioTracks()?.[0];
+            if (!track) {
+              notif_error("ترک میکروفون پیدا نشد.");
+              return;
+            }
+
+            const producer = await transport.produce({ track });
+            micProducerRef.current = producer;
+
+            setMicOn(true);
+            notif_success("میکروفون فعال شد.");
+          } catch (e) {
+            console.error(e);
+            notif_error("فعال‌سازی میکروفون ناموفق بود.");
+          }
+        })();
+      } else if (msg.type === "ms_error") {
+        // اختیاری: لاگ/نمایش خطاهای mediasoup
+        // console.warn("mediasoup error:", msg.action, msg.error);
       }
     });
     return unsub;
@@ -323,6 +411,53 @@ const PlayerPage = () => {
     setTracks(filtered);
   }, [category, search, allTracks]);
 
+  const startMic = async () => {
+    if (micOn || micBusy) return;
+    setMicBusy(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+        video: false,
+      });
+
+      micStreamRef.current = stream;
+
+      // شروع flow سیگنالینگ
+      send({ type: "ms_get_router_rtp_capabilities", roomId });
+    } catch (e) {
+      console.error(e);
+      notif_error("دسترسی به میکروفون ممکن نیست.");
+    } finally {
+      setMicBusy(false);
+    }
+  };
+
+  const stopMic = () => {
+    try {
+      micProducerRef.current?.close();
+    } catch {}
+    micProducerRef.current = null;
+
+    try {
+      micSendTransportRef.current?.close?.();
+    } catch {}
+    micSendTransportRef.current = null;
+
+    if (micStreamRef.current) {
+      for (const t of micStreamRef.current.getTracks()) t.stop();
+    }
+    micStreamRef.current = null;
+
+    micDeviceRef.current = null;
+
+    setMicOn(false);
+    send({ type: "ms_close_mic", roomId });
+  };
+
   return (
     <div className="player-page">
       <PasswordModal
@@ -371,7 +506,6 @@ const PlayerPage = () => {
                 <CustomInput
                   placeholder="جستجو ..."
                   onKeyUp={(event) => setSearch(event.target.value)}
-                  onClick={endTrack}
                 />
               </div>
               <CustomButton
@@ -379,6 +513,42 @@ const PlayerPage = () => {
                 style={{ width: "30%" }}
                 onClick={() => setMessageModal(true)}
               />
+
+              <div
+                style={{
+                  width: 2,
+                  borderRadius: 8,
+                  height: 38,
+                  backgroundColor: "#7B61FF",
+                  marginInlineStart: 8,
+                  marginInlineEnd: 8,
+                }}
+              ></div>
+
+              <div
+                style={{
+                  marginInlineStart: 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                }}
+                onClick={() => (micOn ? stopMic() : startMic())}
+              >
+                {micOn ? <MicrophoneIcon color={"#7B61FF"} /> : <MicrophoneMuteIcon />}
+                <div
+                    style={{
+                      opacity: micOn ? 1 : 0,
+                      marginTop: 4,
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: "#FF3B30",
+                      boxShadow: "0 0 0 2px white",
+                    }}
+                  ></div>
+              </div>
             </div>
           </div>
           <div className="tracks">
